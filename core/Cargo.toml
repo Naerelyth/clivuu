@@ -1,0 +1,17 @@
+[package]
+name = "clivuu-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "GUI-independent image processing, stitching, OCR and desktop protocol"
+
+[dependencies]
+flate2 = "1.1"
+image.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2 = "0.10"
+html5gum = "0.8.4"
+
+[build-dependencies]
+serde_json.workspace = true

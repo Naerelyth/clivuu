@@ -1,0 +1,455 @@
+{
+  "language": {
+    "default": "system",
+    "section": "general"
+  },
+  "snip": {
+    "default": [
+      "<Super><Shift>a"
+    ],
+    "section": "shortcuts"
+  },
+  "paste": {
+    "default": [
+      "<Super><Shift>v"
+    ],
+    "section": "shortcuts"
+  },
+  "toggle-images": {
+    "default": [
+      "<Super><Shift>h"
+    ],
+    "section": "shortcuts"
+  },
+  "stop-recording": {
+    "default": [
+      "<Super><Shift>r"
+    ],
+    "section": "shortcuts"
+  },
+  "ocr-engine": {
+    "default": "auto",
+    "choices": [
+      "auto",
+      "paddle",
+      "tesseract"
+    ],
+    "section": "ocr"
+  },
+  "ocr-model": {
+    "default": "chinese",
+    "choices": [
+      "chinese",
+      "latin",
+      "korean",
+      "cyrillic",
+      "arabic",
+      "greek",
+      "thai"
+    ],
+    "section": "ocr"
+  },
+  "ocr-languages": {
+    "default": "eng+chi_sim",
+    "section": "ocr"
+  },
+  "ocr-quick-copy": {
+    "default": false,
+    "section": "ocr"
+  },
+  "ocr-smart-paragraphs": {
+    "default": true,
+    "section": "ocr"
+  },
+  "ocr-download-mirror": {
+    "default": "",
+    "section": "ocr"
+  },
+  "video-directory": {
+    "default": "",
+    "absolute": true,
+    "section": "save.video"
+  },
+  "pin-storage": {
+    "default": "persistent",
+    "choices": [
+      "persistent",
+      "memory"
+    ],
+    "section": "pins"
+  },
+  "max-scroll-frames": {
+    "default": 40,
+    "min": 2,
+    "max": 200,
+    "section": "scrolling"
+  },
+  "scroll-interval": {
+    "default": 700,
+    "min": 300,
+    "max": 3000,
+    "section": "scrolling"
+  },
+  "scroll-auto-crop": {
+    "default": false,
+    "section": "scrolling"
+  },
+  "recording-storage": {
+    "default": "temporary",
+    "choices": [
+      "temporary",
+      "direct"
+    ],
+    "section": "recording"
+  },
+  "recording-temp-limit-mib": {
+    "default": 512,
+    "min": 16,
+    "max": 16384,
+    "section": "recording"
+  },
+  "capture-mask-color": {
+    "default": "#0000008c",
+    "color": true,
+    "section": "capture.display",
+    "alpha": true
+  },
+  "capture-anchor-color": {
+    "default": "#ffffffff",
+    "color": true,
+    "section": "capture.display",
+    "alpha": true
+  },
+  "capture-show-anchors": {
+    "default": true,
+    "section": "capture.display"
+  },
+  "capture-magnifier-mask": {
+    "default": true,
+    "section": "capture.display"
+  },
+  "capture-magnifier-border": {
+    "default": true,
+    "section": "capture.display"
+  },
+  "capture-magnifier-anchors": {
+    "default": false,
+    "section": "capture.display"
+  },
+  "capture-crosshair": {
+    "default": false,
+    "section": "capture.display"
+  },
+  "capture-disable-guides": {
+    "default": false,
+    "section": "capture.display"
+  },
+  "capture-show-tips": {
+    "default": true,
+    "section": "capture.display"
+  },
+  "capture-detect-windows": {
+    "default": true,
+    "section": "capture.behavior"
+  },
+  "capture-hide-1x1": {
+    "default": true,
+    "section": "capture.behavior"
+  },
+  "capture-cursor": {
+    "default": false,
+    "section": "capture.behavior"
+  },
+  "capture-hide-pins": {
+    "default": true,
+    "section": "capture.behavior"
+  },
+  "capture-history-loop": {
+    "default": false,
+    "section": "capture.behavior"
+  },
+  "capture-border-width": {
+    "default": 2,
+    "min": 1,
+    "max": 8,
+    "section": "capture.display"
+  },
+  "capture-history-areas": {
+    "default": 8,
+    "min": 0,
+    "max": 100,
+    "section": "capture.behavior"
+  },
+  "capture-history-records": {
+    "default": 20,
+    "min": 0,
+    "max": 100,
+    "section": "capture.behavior"
+  },
+  "theme": {
+    "default": "system",
+    "choices": [
+      "system",
+      "light",
+      "dark"
+    ],
+    "section": "general"
+  },
+  "preferences-font": {
+    "default": "",
+    "section": "general"
+  },
+  "custom-colors": {
+    "default": [],
+    "max_items": 16,
+    "color_items": true,
+    "section": "annotation"
+  },
+  "accent-color": {
+    "default": "#bd93f9ff",
+    "color": true,
+    "section": "general",
+    "alpha": true
+  },
+  "image-manual-name": {
+    "default": "Clivuu_$yyyy-MM-dd_HH-mm-ss$",
+    "filename": "image",
+    "section": "save.image"
+  },
+  "image-quick-name": {
+    "default": "Clivuu_$yyyy-MM-dd_HH-mm-ss$",
+    "filename": "image",
+    "section": "save.image"
+  },
+  "image-auto-name": {
+    "default": "Clivuu_$yyyy-MM-dd_HH-mm-ss$",
+    "filename": "image",
+    "section": "save.image"
+  },
+  "image-quick-directory": {
+    "default": "",
+    "absolute": true,
+    "section": "save.image"
+  },
+  "image-auto-directory": {
+    "default": "",
+    "absolute": true,
+    "section": "save.image"
+  },
+  "image-auto-save": {
+    "default": false,
+    "section": "save.image"
+  },
+  "image-save-notify": {
+    "default": true,
+    "section": "save.image"
+  },
+  "video-manual-name": {
+    "default": "Clivuu_$yyyy-MM-dd_HH-mm-ss$",
+    "filename": "video",
+    "section": "save.video"
+  },
+  "video-quick-name": {
+    "default": "Clivuu_$yyyy-MM-dd_HH-mm-ss$",
+    "filename": "video",
+    "section": "save.video"
+  },
+  "video-save-notify": {
+    "default": true,
+    "section": "save.video"
+  },
+  "image-remember-extension": {
+    "default": true,
+    "section": "save.image"
+  },
+  "image-last-extension": {
+    "default": "png",
+    "choices": [
+      "png",
+      "jpg",
+      "jpeg"
+    ],
+    "section": "save.image"
+  },
+  "image-quality": {
+    "default": 100,
+    "min": 0,
+    "max": 100,
+    "section": "save.image"
+  },
+  "pin-shadow": {
+    "default": true,
+    "section": "pins.display"
+  },
+  "pin-shadow-tint": {
+    "default": "#909090ff",
+    "section": "pins.display",
+    "color": true,
+    "alpha": true
+  },
+  "pin-opacity": {
+    "default": 100,
+    "section": "pins.display",
+    "min": 10,
+    "max": 100
+  },
+  "pin-max-size": {
+    "default": 12000,
+    "section": "pins.display",
+    "min": 100,
+    "max": 100000
+  },
+  "pin-thumbnail-width": {
+    "default": 100,
+    "section": "pins.display",
+    "min": 24,
+    "max": 1000
+  },
+  "pin-thumbnail-height": {
+    "default": 100,
+    "section": "pins.display",
+    "min": 24,
+    "max": 1000
+  },
+  "pin-use-snip-position": {
+    "default": true,
+    "section": "pins.behavior"
+  },
+  "pin-zoom-at-cursor": {
+    "default": false,
+    "section": "pins.behavior"
+  },
+  "pin-smooth-scaling": {
+    "default": true,
+    "section": "pins.behavior"
+  },
+  "pin-reset-thumbnail": {
+    "default": true,
+    "section": "pins.behavior"
+  },
+  "pin-translucent-flash": {
+    "default": true,
+    "section": "pins.behavior"
+  },
+  "pin-flash-group": {
+    "default": true,
+    "section": "pins.behavior"
+  },
+  "pin-hide-on-flash": {
+    "default": false,
+    "section": "pins.behavior"
+  },
+  "pin-preserve-drag": {
+    "default": false,
+    "section": "pins.behavior"
+  },
+  "pin-confirm-close": {
+    "default": true,
+    "section": "pins.behavior"
+  },
+  "pin-confirm-destroy": {
+    "default": true,
+    "section": "pins.behavior"
+  },
+  "pin-flash-new": {
+    "default": false,
+    "section": "pins.behavior"
+  },
+  "pin-activate-new": {
+    "default": true,
+    "section": "pins.behavior"
+  },
+  "pin-gnome-focus": {
+    "default": true,
+    "section": "pins.behavior"
+  },
+  "pin-closed-limit": {
+    "default": 1,
+    "section": "pins.behavior",
+    "min": 0,
+    "max": 128
+  },
+  "pin-text-enabled": {
+    "default": true,
+    "section": "pins.conversion"
+  },
+  "pin-text-ignore-html": {
+    "default": false,
+    "section": "pins.conversion"
+  },
+  "pin-text-skip-paths": {
+    "default": true,
+    "section": "pins.conversion"
+  },
+  "pin-text-margin": {
+    "default": 20,
+    "section": "pins.conversion",
+    "min": 0,
+    "max": 100
+  },
+  "pin-text-max-width": {
+    "default": 1200,
+    "section": "pins.conversion",
+    "min": 100,
+    "max": 10000
+  },
+  "pin-text-font": {
+    "default": "Sans 9",
+    "section": "pins.conversion"
+  },
+  "pin-text-background": {
+    "default": "#ffffffff",
+    "section": "pins.conversion",
+    "color": true,
+    "alpha": true
+  },
+  "pin-text-foreground": {
+    "default": "#000000ff",
+    "section": "pins.conversion",
+    "color": true,
+    "alpha": true
+  },
+  "pin-mouse-zoom": {
+    "default": "wheel",
+    "mouse_binding": true,
+    "section": "control.mouse"
+  },
+  "pin-mouse-opacity": {
+    "default": "ctrl+wheel",
+    "mouse_binding": true,
+    "section": "control.mouse"
+  },
+  "pin-mouse-close": {
+    "default": "double-left",
+    "mouse_binding": true,
+    "section": "control.mouse"
+  },
+  "pin-mouse-reset": {
+    "default": "middle",
+    "mouse_binding": true,
+    "section": "control.mouse"
+  },
+  "pin-mouse-thumbnail": {
+    "default": "shift+double-left",
+    "mouse_binding": true,
+    "section": "control.mouse"
+  },
+  "pin-mouse-copy-text": {
+    "default": "shift+right",
+    "mouse_binding": true,
+    "section": "control.mouse"
+  },
+  "pin-mouse-destroy": {
+    "default": "ctrl+double-left",
+    "mouse_binding": true,
+    "section": "control.mouse"
+  },
+  "pin-mouse-zoom-keys": {
+    "default": true,
+    "section": "control.mouse"
+  },
+  "pin-mouse-opacity-keys": {
+    "default": true,
+    "section": "control.mouse"
+  }
+}
