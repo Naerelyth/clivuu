@@ -1,0 +1,37 @@
+#!/bin/sh
+set -eu
+
+# The CLI may start the long-lived native desktop service. Both executables
+# must outlive the AppImage mount, which disappears when this launcher exits.
+app_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
+payload="$app_dir/usr"
+user_id=$(id -u)
+case "${XDG_RUNTIME_DIR:-}" in
+    /*) runtime_base=$XDG_RUNTIME_DIR ;;
+    *) case "${TMPDIR:-}" in
+        /*) runtime_base=$TMPDIR ;;
+        *) runtime_base=/tmp ;;
+    esac ;;
+esac
+cache_base="$runtime_base/clivuu-appimage-$user_id"
+cache="$cache_base/@PAYLOAD_ID@"
+umask 077
+if [ ! -d "$cache_base" ]; then
+    mkdir -m 700 -- "$cache_base" 2>/dev/null || :
+fi
+if [ -L "$cache_base" ] || [ "$(stat -c '%u:%a' -- "$cache_base")" != "$user_id:700" ]; then
+    printf '%s\n' 'Clivuu: runtime cache must be a private directory owned by the current user.' >&2
+    exit 1
+fi
+if [ ! -f "$cache/.ready" ]; then
+    staging=$(mktemp -d "$cache_base/.staging.XXXXXX")
+    trap 'rm -rf -- "$staging"' EXIT HUP INT TERM
+    cp -a -- "$payload/." "$staging/"
+    chmod 700 -- "$staging"
+    : > "$staging/.ready"
+    # Concurrent launches may have already published the same immutable tree.
+    mv -T -n -- "$staging" "$cache"
+    rm -rf -- "$staging"
+    trap - EXIT HUP INT TERM
+fi
+exec "$cache/bin/clivuu" "$@"

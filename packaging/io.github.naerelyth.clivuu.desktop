@@ -1,0 +1,18 @@
+[Desktop Entry]
+Type=Application
+Name=Clivuu
+Name[zh_CN]=Clivuu
+Comment=Screenshots and non-focusing image pins
+Comment[zh_CN]=截图与无焦点贴图
+Exec=clivuu
+Icon=io.github.naerelyth.clivuu
+Categories=Graphics;Photography;
+Terminal=false
+StartupNotify=false
+StartupWMClass=io.github.naerelyth.clivuu
+Actions=Preferences;
+
+[Desktop Action Preferences]
+Name=Preferences
+Name[zh_CN]=首选项
+Exec=clivuu open-preferences
