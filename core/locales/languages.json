@@ -1,0 +1,7 @@
+{
+  "default": "en",
+  "languages": [
+    {"id": "zh-CN", "name": "简体中文", "aliases": ["zh", "zh-Hans"], "catalog": "zh-CN.json"},
+    {"id": "en", "name": "English", "aliases": [], "catalog": "en.json"}
+  ]
+}
