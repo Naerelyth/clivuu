@@ -1,0 +1,114 @@
+{
+  "common/appearance.js": {
+    "sourceSha256": "1eeb09b86f7d65bc9df50071f20d1009a2fa490af66af28698851c7afc18c980",
+    "fixtureSha256": "1eeb09b86f7d65bc9df50071f20d1009a2fa490af66af28698851c7afc18c980"
+  },
+  "common/toolbar-theme.js": {
+    "sourceSha256": "b32ad8f880aa97666322df3f5772913193a17062de843871f0270b346106a292",
+    "fixtureSha256": "b32ad8f880aa97666322df3f5772913193a17062de843871f0270b346106a292"
+  },
+  "common/color-editor.js": {
+    "sourceSha256": "cedbffcac235cf4341caf3a052cf4071c812eef2c06eb770f53f67b7469c2b49",
+    "fixtureSha256": "cedbffcac235cf4341caf3a052cf4071c812eef2c06eb770f53f67b7469c2b49"
+  },
+  "portable/portal.js": {
+    "sourceSha256": "5cb03d1cbf505e5091a092262fe33afb9b8c55883815d9d24733799ac8f768e0",
+    "fixtureSha256": "5cb03d1cbf505e5091a092262fe33afb9b8c55883815d9d24733799ac8f768e0"
+  },
+  "common/i18n.js": {
+    "sourceSha256": "ce324e0d5e367b6f0a494baaaed2e8925ccc1e2697e5b578c269c00710bc4451",
+    "fixtureSha256": "ce324e0d5e367b6f0a494baaaed2e8925ccc1e2697e5b578c269c00710bc4451"
+  },
+  "common/color-model.js": {
+    "sourceSha256": "e8e5e4c6c5feb8ee3fc00fbb9edd0e8cc474e5654ab0e30bd609d2b6188e45f0",
+    "fixtureSha256": "e8e5e4c6c5feb8ee3fc00fbb9edd0e8cc474e5654ab0e30bd609d2b6188e45f0"
+  },
+  "common/annotation-options-model.js": {
+    "sourceSha256": "3b2b77f592e8465863b989f70c4c47b8be03ec3fb23a0c81baa6fb42470bce75",
+    "fixtureSha256": "3b2b77f592e8465863b989f70c4c47b8be03ec3fb23a0c81baa6fb42470bce75"
+  },
+  "common/capture-options.js": {
+    "sourceSha256": "c276908a18aad28475521fa48811c7f289ae58bcf919c9d7e347e727e512f710",
+    "fixtureSha256": "c276908a18aad28475521fa48811c7f289ae58bcf919c9d7e347e727e512f710"
+  },
+  "common/annotation-render.js": {
+    "sourceSha256": "82c40a40f560b2a38d55bc26e1bc817a01c637ef07f3610e240bbd93e8c840c9",
+    "fixtureSha256": "82c40a40f560b2a38d55bc26e1bc817a01c637ef07f3610e240bbd93e8c840c9"
+  },
+  "common/text-style.js": {
+    "sourceSha256": "ec5acf14ba246a796e48cea5639c91fe78544248edd5d7f9631b7b7a238379e4",
+    "fixtureSha256": "ec5acf14ba246a796e48cea5639c91fe78544248edd5d7f9631b7b7a238379e4"
+  },
+  "common/annotation-model.js": {
+    "sourceSha256": "2a314e162b48afadb56bd58a2c7b4fe30bb57d7860d43b394c1d37f597bb4245",
+    "fixtureSha256": "2a314e162b48afadb56bd58a2c7b4fe30bb57d7860d43b394c1d37f597bb4245"
+  },
+  "common/annotation-history.js": {
+    "sourceSha256": "7daa65d6f81f84f08d3678ad137c73a243fc9d2ec248e8973d1f65065979d531",
+    "fixtureSha256": "7daa65d6f81f84f08d3678ad137c73a243fc9d2ec248e8973d1f65065979d531"
+  },
+  "common/geometry.js": {
+    "sourceSha256": "03aa168c109459d2e65b0251cbd090bbf599cca483265df322fb8606c2694f79",
+    "fixtureSha256": "03aa168c109459d2e65b0251cbd090bbf599cca483265df322fb8606c2694f79"
+  },
+  "common/shadow-profile.js": {
+    "sourceSha256": "7f29e42a706fba3f14e8ef4d52c6b571e73321c51b29dcb6f402608f5253d07a",
+    "fixtureSha256": "7f29e42a706fba3f14e8ef4d52c6b571e73321c51b29dcb6f402608f5253d07a"
+  },
+  "common/process.js": {
+    "sourceSha256": "30e8cad2995f298adc054c1697c9e5dff32b366c73a82f7e321a506e7e2364a6",
+    "fixtureSha256": "30e8cad2995f298adc054c1697c9e5dff32b366c73a82f7e321a506e7e2364a6"
+  },
+  "common/locale.js": {
+    "sourceSha256": "0b80f5423091fe2546cb5d48d4df91d12e782d69aceffec949508181149a4904",
+    "fixtureSha256": "0b80f5423091fe2546cb5d48d4df91d12e782d69aceffec949508181149a4904"
+  },
+  "common/pin-edit.js": {
+    "sourceSha256": "2c587f3e6f6fa87cb19b5cef1c7169162dcacfb4dd47b9bc30a4da888eb6064e",
+    "fixtureSha256": "be3cb7d9ab94095035fa66c622159910893960a647b30b94356a8db757331872"
+  },
+  "portable/selection.js": {
+    "sourceSha256": "7bb84a42a11bb0444e9ac50736e750908b889712056a2b980ea0537f3a2aefd8",
+    "fixtureSha256": "7bb84a42a11bb0444e9ac50736e750908b889712056a2b980ea0537f3a2aefd8"
+  },
+  "portable/capture-canvas.js": {
+    "sourceSha256": "a161343ba574e1ada962538ed883ad3540427d7e73a7299b8338a17244f4c650",
+    "fixtureSha256": "a161343ba574e1ada962538ed883ad3540427d7e73a7299b8338a17244f4c650"
+  },
+  "portable/tool-icon.js": {
+    "sourceSha256": "338c2ff6d883fb162450556b043ec8fc076097784d2677cae5611a5deb85d883",
+    "fixtureSha256": "338c2ff6d883fb162450556b043ec8fc076097784d2677cae5611a5deb85d883"
+  },
+  "portable/overlay.js": {
+    "sourceSha256": "31e23aa49cf73425252fd259f6322c54112e939e5c5dc1ba1c929e4ea06d7b6c",
+    "fixtureSha256": "b03bdbff5798f539f0f5c667a8fc2fd53b35dc0d8b3967ac85bb65a02accac75"
+  },
+  "common/toolbar-model.js": {
+    "sourceSha256": "44ca3e50412662a19b5842a4193ab307e321269f6f6f2f5159d5cabaf8466ae4",
+    "fixtureSha256": "44ca3e50412662a19b5842a4193ab307e321269f6f6f2f5159d5cabaf8466ae4"
+  },
+  "common/gtk-theme.js": {
+    "sourceSha256": "4b9d6ac233d10c97451f6cc5467106ef6909d51dbd9d514906b54fc2cccc53d7",
+    "fixtureSha256": "4b9d6ac233d10c97451f6cc5467106ef6909d51dbd9d514906b54fc2cccc53d7"
+  },
+  "portable/inline-text.js": {
+    "sourceSha256": "5d0d75b464d18d26c2679f133be73f1c83d387cf94f749d3fda472e768d732d1",
+    "fixtureSha256": "5d0d75b464d18d26c2679f133be73f1c83d387cf94f749d3fda472e768d732d1"
+  },
+  "portable/viewport.js": {
+    "sourceSha256": "a12b4ac492209433a6cbe7c4a0ee1491f5f20052f0674ad64f6a5af339249bc8",
+    "fixtureSha256": "a12b4ac492209433a6cbe7c4a0ee1491f5f20052f0674ad64f6a5af339249bc8"
+  },
+  "portable/annotation-options.js": {
+    "sourceSha256": "34e8003a6c6cd3c19723f2ff360c46139dfbfa9a95e9338cea06fb81261ae23b",
+    "fixtureSha256": "34e8003a6c6cd3c19723f2ff360c46139dfbfa9a95e9338cea06fb81261ae23b"
+  },
+  "portable/color-widgets.js": {
+    "sourceSha256": "43c2a353711baf865458a509ee765dbac053e3ef24092311b251a75ffb44f2e6",
+    "fixtureSha256": "43c2a353711baf865458a509ee765dbac053e3ef24092311b251a75ffb44f2e6"
+  },
+  "portable/inline-popup.js": {
+    "sourceSha256": "e8bd8b3ea69c20052a7c7affc1cc81ada77e5f81d5934603ea3c6ff49e55620a",
+    "fixtureSha256": "e8bd8b3ea69c20052a7c7affc1cc81ada77e5f81d5934603ea3c6ff49e55620a"
+  }
+}
