@@ -1,0 +1,11 @@
+[package]
+name = "clivuu-x11"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+clivuu-core = { path = "../../core" }
