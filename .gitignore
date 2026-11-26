@@ -1,0 +1,10 @@
+dist/
+
+/reference/
+.planning/
+.agents/
+.codegraph/
+assets/clivuu-icon/
+
+__pycache__/
+*.pyc
