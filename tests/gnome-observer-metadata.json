@@ -1,0 +1,7 @@
+{
+  "uuid": "clivuu-test-observer@naerelyth.github.io",
+  "name": "Clivuu test observer",
+  "description": "Observer for isolated Clivuu integration tests; not an application backend",
+  "shell-version": ["46", "47", "48", "49", "50"],
+  "version": 1
+}
