@@ -1,0 +1,239 @@
+/* Scoped to this window: editor surfaces keep their own theme and accent. */
+.clivuu-preferences:not(dialog),
+.clivuu-preferences headerbar,
+.clivuu-preferences preferencespage {
+  background: @prefs_background;
+  color: @prefs_ink;
+}
+.clivuu-preferences-dialog,
+dialog-host > dialog.clivuu-preferences-dialog,
+dialog-host > dialog.clivuu-preferences-dialog.background {
+  background: none;
+}
+dialog-host > dialog.clivuu-preferences-dialog floating-sheet > dimming {
+  background: @prefs_scrim;
+}
+dialog-host > dialog.clivuu-preferences-dialog floating-sheet > sheet {
+  background: @prefs_background;
+  color: @prefs_ink;
+  border: 1px solid alpha(@prefs_border, 0.85);
+}
+dialog-host > dialog.clivuu-preferences-dialog.alert sheet {
+  background: @prefs_surface;
+  color: @prefs_ink;
+}
+.clivuu-preferences headerbar { box-shadow: none; }
+.clivuu-preferences .preferences-sidebar,
+.clivuu-preferences .preferences-sidebar headerbar {
+  background: @prefs_sidebar;
+}
+.clivuu-preferences .navigation-sidebar { background: transparent; padding: 12px 8px; }
+.clivuu-preferences .navigation-sidebar row { border-radius: 8px; margin-bottom: 4px; }
+.clivuu-preferences .navigation-sidebar row:selected {
+  background: alpha(@prefs_accent, 0.18);
+  color: @prefs_ink;
+}
+.clivuu-preferences .navigation-sidebar row:selected image { color: @prefs_accent; }
+.clivuu-preferences .navigation-sidebar row:hover { background: alpha(@prefs_accent, 0.10); }
+.clivuu-preferences preferencesgroup > box > label,
+.clivuu-preferences .subtitle { color: @prefs_muted; }
+.clivuu-preferences .subtitle { opacity: 1; }
+.clivuu-preferences preferencesgroup > box > label.title { color: @prefs_ink; }
+.clivuu-preferences list.boxed-list {
+  background: @prefs_surface;
+  color: @prefs_ink;
+  box-shadow: 0 1px 3px alpha(black, 0.08);
+}
+.clivuu-preferences list.boxed-list > row { border-color: alpha(@prefs_border, 0.6); }
+.clivuu-preferences separator { background: @prefs_border; min-width: 1px; }
+.clivuu-preferences button,
+.clivuu-preferences entry,
+.clivuu-preferences spinbutton {
+  color: @prefs_ink;
+}
+.clivuu-preferences preferencespage button:not(.flat):not(.destructive-action):not(.suggested-action) {
+  background: alpha(@prefs_border, 0.5);
+}
+.clivuu-preferences preferencespage button:hover { background: alpha(@prefs_accent, 0.12); }
+.clivuu-preferences switch:checked,
+.clivuu-preferences check:checked,
+.clivuu-preferences button.suggested-action {
+  background: @prefs_accent;
+  color: @prefs_background;
+}
+.clivuu-preferences entry:focus-within,
+.clivuu-preferences spinbutton:focus-within { outline-color: @prefs_accent; }
+.clivuu-preferences popover > contents {
+  background: @prefs_surface;
+  color: @prefs_ink;
+  border-color: @prefs_border;
+}
+.clivuu-preferences popover row:selected { background: alpha(@prefs_accent, 0.18); }
+.clivuu-preferences .reset-preferences { padding-top: 8px; padding-bottom: 8px; }
+.clivuu-preferences button.destructive-action {
+  background: alpha(@prefs_danger, 0.16);
+  color: @prefs_danger;
+}
+.clivuu-preferences .reset-preferences button.destructive-action {
+  font-weight: 700;
+  padding: 8px 22px;
+  box-shadow: none;
+}
+.clivuu-preferences button.destructive-action:hover {
+  background: alpha(@prefs_danger, 0.26);
+}
+.clivuu-preferences .naming-rules .rule-token { color: @prefs_accent; }
+.clivuu-preferences .naming-rules > row { padding: 0; }
+.clivuu-preferences .naming-example { background: @prefs_surface; }
+.clivuu-preferences .naming-rules selection { background: alpha(@prefs_accent, 0.3); color: @prefs_ink; }
+.clivuu-preferences .preferences-color-button { padding: 4px; border: 1px solid @prefs_border; }
+
+.clivuu-preferences .clivuu-about-card {
+  background: @prefs_surface;
+  border: 1px solid alpha(@prefs_border, 0.75);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 2px 8px alpha(black, 0.08);
+}
+.clivuu-preferences .clivuu-about-name { font-size: 2em; font-weight: 700; }
+.clivuu-preferences .clivuu-about-version {
+  background: alpha(@prefs_accent, 0.14);
+  color: @prefs_accent;
+  border-radius: 10px;
+  padding: 6px 18px;
+  font-weight: 700;
+}
+.clivuu-preferences .clivuu-about-project {
+  background: @prefs_background;
+  color: @prefs_ink;
+  border: 1px solid alpha(@prefs_border, 0.75);
+  border-radius: 12px;
+  padding: 16px;
+}
+.clivuu-preferences .clivuu-about-project:hover { background: alpha(@prefs_accent, 0.10); }
+.clivuu-preferences .clivuu-about-project:focus-visible { outline-color: @prefs_accent; }
+.clivuu-preferences row.error label.subtitle,
+.clivuu-preferences row.error .subtitle { color: @prefs_danger; opacity: 1; }
+.clivuu-preferences button.flat:disabled { opacity: 0.35; }
+
+/* OCR settings page: script specimen tiles, tabular pack metadata, and active status pills. */
+.clivuu-preferences preferencespage button.flat.clivuu-ocr-folder-btn {
+  background: @prefs_surface;
+  color: @prefs_ink;
+  border: 1px solid alpha(@prefs_border, 0.85);
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-weight: 600;
+}
+.clivuu-preferences preferencespage button.flat.clivuu-ocr-folder-btn:hover {
+  background: alpha(@prefs_accent, 0.12);
+  border-color: alpha(@prefs_accent, 0.45);
+}
+.clivuu-preferences .clivuu-ocr-script-tile {
+  min-width: 32px;
+  min-height: 32px;
+  border-radius: 9px;
+  background: alpha(@prefs_border, 0.34);
+  border: 1px solid alpha(@prefs_border, 0.65);
+  color: @prefs_muted;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  margin-right: 4px;
+}
+.clivuu-preferences .clivuu-ocr-script-tile > label {
+  font-weight: 700;
+  font-size: 0.94em;
+  letter-spacing: -0.01em;
+}
+.clivuu-preferences .clivuu-ocr-script-tile.is-installed {
+  background: alpha(@prefs_border, 0.52);
+  border-color: alpha(@prefs_border, 0.90);
+  color: @prefs_ink;
+}
+.clivuu-preferences .clivuu-ocr-script-tile.is-active {
+  background: alpha(@prefs_accent, 0.18);
+  border-color: alpha(@prefs_accent, 0.48);
+  color: @prefs_accent;
+}
+.clivuu-preferences list.boxed-list row.clivuu-ocr-pack-active {
+  background: alpha(@prefs_accent, 0.055);
+}
+.clivuu-preferences .clivuu-ocr-size {
+  color: @prefs_muted;
+  font-size: 0.86em;
+  font-variant-numeric: tabular-nums;
+}
+.clivuu-preferences .clivuu-ocr-active-pill {
+  background: alpha(@prefs_accent, 0.16);
+  color: @prefs_accent;
+  border: 1px solid alpha(@prefs_accent, 0.42);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 0.85em;
+  font-weight: 700;
+}
+.clivuu-preferences .clivuu-ocr-status-pill {
+  background: alpha(@prefs_border, 0.38);
+  color: @prefs_muted;
+  border: 1px solid alpha(@prefs_border, 0.72);
+  border-radius: 999px;
+  padding: 4px 11px;
+  font-size: 0.84em;
+  font-weight: 600;
+}
+.clivuu-preferences .clivuu-ocr-status-pill.is-ready {
+  background: alpha(@prefs_accent, 0.11);
+  color: @prefs_ink;
+  border-color: alpha(@prefs_accent, 0.32);
+}
+.clivuu-preferences .clivuu-ocr-status-pill.is-warning {
+  background: alpha(@prefs_danger, 0.14);
+  color: @prefs_danger;
+  border-color: alpha(@prefs_danger, 0.38);
+}
+.clivuu-preferences .clivuu-ocr-code-pill {
+  background: alpha(@prefs_border, 0.42);
+  color: @prefs_muted;
+  border: 1px solid alpha(@prefs_border, 0.72);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-family: monospace;
+  font-size: 0.82em;
+  font-weight: 600;
+}
+.clivuu-preferences .clivuu-ocr-missing-tag {
+  color: @prefs_danger;
+  font-size: 0.84em;
+  font-weight: 600;
+}
+.clivuu-preferences preferencespage button.clivuu-ocr-action-btn {
+  min-width: 72px;
+  min-height: 30px;
+  padding: 3px 13px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+.clivuu-preferences preferencespage button.flat.clivuu-ocr-remove-btn {
+  min-width: 30px;
+  min-height: 30px;
+  padding: 0;
+  border-radius: 7px;
+  color: @prefs_muted;
+}
+.clivuu-preferences preferencespage button.flat.clivuu-ocr-remove-btn:hover {
+  background: alpha(@prefs_danger, 0.16);
+  color: @prefs_danger;
+}
+.clivuu-preferences .clivuu-ocr-progress {
+  min-width: 68px;
+}
+.clivuu-preferences .clivuu-ocr-progress trough {
+  min-height: 6px;
+  border-radius: 999px;
+  background: alpha(@prefs_border, 0.60);
+}
+.clivuu-preferences .clivuu-ocr-progress progress {
+  min-height: 6px;
+  border-radius: 999px;
+  background: @prefs_accent;
+}

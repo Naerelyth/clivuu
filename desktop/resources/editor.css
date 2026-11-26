@@ -1,0 +1,76 @@
+/* Scoped controls, kept in a separate provider and unified on in-surface popups. */
+        .clivuu-capture-toolbar label.clivuu-toolbar-metric { color:alpha(@clivuu_ink, 0.88); }
+        .clivuu-capture-toolbar button.clivuu-toolbar-choice:not(.clivuu-color-action):not(.suggested-action):not(:checked),
+        .clivuu-capture-toolbar.clivuu-theme-dark button.clivuu-toolbar-choice:not(.clivuu-color-action):not(.suggested-action):not(:checked) { background:alpha(@clivuu_ink, 0.07); }
+        .clivuu-capture-toolbar button.clivuu-toolbar-choice:not(.clivuu-color-action):not(.suggested-action):not(:checked):hover,
+        .clivuu-capture-toolbar.clivuu-theme-dark button.clivuu-toolbar-choice:not(.clivuu-color-action):not(.suggested-action):not(:checked):hover { background:@clivuu_hover; }
+        .clivuu-capture-toolbar button.suggested-action:not(.clivuu-color-action), .clivuu-capture-toolbar button:checked,
+        .clivuu-capture-toolbar.clivuu-theme-dark button.suggested-action:not(.clivuu-color-action), .clivuu-capture-toolbar.clivuu-theme-dark button:checked { background:@clivuu_selected;color:@clivuu_selectedInk; }
+        .clivuu-capture-toolbar scale highlight { background:@clivuu_selected; }
+        .clivuu-capture-hint { background:@clivuu_background;color:@clivuu_ink;border:1px solid @clivuu_border; }
+    .clivuu-inline-popover { background:@clivuu_popBg;color:@clivuu_ink;border:1px solid @clivuu_popBorder;border-radius:8px;padding:6px;box-shadow:0 6px 18px #0004;font-size:12px; }
+        .clivuu-inline-popover label { color:inherit; }
+        .clivuu-inline-popover button:not(.clivuu-color-action):not(.clivuu-confirm-button):not(.clivuu-audio-mute):not(.clivuu-choice-item) { border:0;border-radius:5px;box-shadow:none;outline:none;transition:background-color 90ms ease-out; }
+        .clivuu-inline-popover button:not(.clivuu-color-action):not(.clivuu-confirm-button):not(.clivuu-audio-mute):not(:checked):not(.selected):not(.suggested-action) { background:transparent;color:@clivuu_ink; }
+        .clivuu-inline-popover button:not(.clivuu-color-action):not(.clivuu-confirm-button):not(.clivuu-trim-action):not(.clivuu-choice-item):not(.clivuu-audio-mute):not(.clivuu-audio-reset) { min-height:22px;padding:2px 7px; }
+        .clivuu-inline-popover .clivuu-choice-list { margin:-2px;font-size:11.5px; }
+        .clivuu-inline-popover .clivuu-choice-list separator { margin:2px 4px; }
+        .clivuu-inline-popover button.clivuu-choice-item { border:0;border-radius:5px;box-shadow:none;outline:none;padding:0 8px;min-height:21px;font-size:11.5px;font-weight:450;transition:background-color 90ms ease-out; }
+        .clivuu-inline-popover button.clivuu-choice-item:focus-visible { box-shadow:inset 0 0 0 1px alpha(@clivuu_selected, 0.55); }
+        .clivuu-inline-popover .clivuu-choice-check { color:@clivuu_checkInk; }
+        .clivuu-inline-popover .clivuu-trim-list { margin:-2px; }
+        .clivuu-inline-popover button:not(.clivuu-color-action):not(.clivuu-confirm-button):not(.clivuu-audio-mute):not(:checked):not(.selected):not(.suggested-action):hover { background:@clivuu_itemHover; }
+        .clivuu-inline-popover button:not(.clivuu-color-action):not(.clivuu-confirm-button):not(.clivuu-audio-mute):not(:checked):not(.selected):not(.suggested-action):active { background:@clivuu_itemActive; }
+        .clivuu-inline-popover button:disabled { opacity:0.38; }
+        .clivuu-inline-popover button:not(.clivuu-color-action):not(.clivuu-confirm-button):not(.clivuu-audio-mute):not(.suggested-action):checked,
+        .clivuu-inline-popover button:not(.clivuu-color-action):not(.clivuu-confirm-button):not(.clivuu-audio-mute):not(.suggested-action).selected { background:@clivuu_itemSelected;color:@clivuu_ink;font-weight:560; }
+        .clivuu-inline-popover button:not(.clivuu-color-action):not(.clivuu-confirm-button):not(.clivuu-audio-mute):not(.suggested-action):checked:hover,
+        .clivuu-inline-popover button:not(.clivuu-color-action):not(.clivuu-confirm-button):not(.clivuu-audio-mute):not(.suggested-action).selected:hover { background:@clivuu_itemSelectedHover; }
+        .clivuu-inline-popover button:not(.clivuu-color-action):not(.clivuu-confirm-button):not(.clivuu-audio-mute).suggested-action { background:@clivuu_selected;color:@clivuu_selectedInk; }
+        .clivuu-inline-popover entry, .clivuu-inline-popover spinbutton, .clivuu-inline-popover dropdown > button { background:@clivuu_field;color:@clivuu_ink;border:1px solid @clivuu_border;border-radius:4px;box-shadow:none;min-height:24px; }
+        .clivuu-inline-popover entry:focus-within, .clivuu-inline-popover spinbutton:focus-within { border-color:@clivuu_selected; }
+        .clivuu-inline-popover spinbutton text { color:@clivuu_ink;background:transparent;padding:0 4px; }
+        .clivuu-inline-popover spinbutton button { min-width:14px;padding:0 3px; }
+        .clivuu-inline-popover listview, .clivuu-inline-popover list { background:transparent;color:@clivuu_ink; }
+        .clivuu-inline-popover row { color:@clivuu_ink;padding:0 7px;min-height:22px;border-radius:5px;outline:none;transition:background-color 90ms ease-out; }
+        .clivuu-inline-popover row:hover { background:@clivuu_itemHover; }
+        .clivuu-inline-popover row:selected { background:@clivuu_itemSelected;color:@clivuu_ink;font-weight:560; }
+        .clivuu-inline-popover row:selected:hover { background:@clivuu_itemSelectedHover; }
+        .clivuu-inline-popover separator { background:@clivuu_divider;min-height:1px; }
+        .clivuu-inline-popover checkbutton check:checked, .clivuu-inline-popover scale highlight { background:@clivuu_selected;color:@clivuu_selectedInk;border-color:@clivuu_selected; }
+        .clivuu-inline-popover .clivuu-color-action { background:@clivuu_hover;color:@clivuu_ink;border:1px solid @clivuu_border;border-radius:5px;min-height:24px;padding:4px 12px;font-weight:600; }
+        .clivuu-inline-popover .clivuu-color-action.suggested-action { background:@clivuu_selected;color:@clivuu_selectedInk;border-color:@clivuu_selected; }
+        .clivuu-inline-popover .clivuu-confirm-popup { padding:0; }
+        .clivuu-inline-popover .clivuu-confirm-icon { color:@clivuu_dangerIcon; }
+        .clivuu-inline-popover .clivuu-confirm-icon-neutral { color:@clivuu_selected; }
+        .clivuu-inline-popover .clivuu-confirm-message { font-weight:500;line-height:1.25; }
+        .clivuu-inline-popover button.clivuu-confirm-button { background:@clivuu_field;color:@clivuu_ink;border:1px solid @clivuu_border;border-radius:4px;box-shadow:none;min-width:0;min-height:20px;padding:2px 8px;font-weight:500; }
+        .clivuu-inline-popover button.clivuu-confirm-button:hover { background:@clivuu_hover;border-color:@clivuu_ink; }
+        .clivuu-inline-popover button.clivuu-confirm-button:focus-visible { outline:2px solid @clivuu_selected;outline-offset:1px; }
+        .clivuu-inline-popover button.clivuu-confirm-button.suggested-action { background:@clivuu_selected;color:@clivuu_selectedInk;border-color:@clivuu_selected;font-weight:600; }
+        .clivuu-inline-popover button.clivuu-confirm-button.suggested-action:hover { opacity:0.92; }
+        .clivuu-inline-popover button.clivuu-confirm-button.destructive-action { background:@clivuu_danger;color:@clivuu_dangerInk;border-color:@clivuu_dangerBorder;font-weight:600; }
+        .clivuu-inline-popover button.clivuu-confirm-button.destructive-action:hover { background:@clivuu_dangerHover;border-color:@clivuu_dangerHover; }
+        .clivuu-inline-popover button.clivuu-confirm-button.destructive-action:focus-visible { outline:2px solid @clivuu_dangerIcon;outline-offset:1px; }
+.clivuu-inline-popover button.clivuu-trim-action {min-width:24px;min-height:24px;padding:0;}
+
+/* Playback keeps one fixed two-row frame, independent of notices and export. */
+.clivuu-capture-toolbar.clivuu-playback-toolbar { padding:0; }
+.clivuu-playback-toolbar separator.clivuu-playback-divider { min-height:1px; margin:0; background:@clivuu_divider; }
+.clivuu-capture-toolbar.clivuu-playback-toolbar button.clivuu-playback-cancel { min-height:18px; padding:0 3px; }
+.clivuu-playback-toolbar progressbar trough { min-height:6px; }
+.clivuu-playback-toolbar progressbar progress { min-height:6px; background:@clivuu_selected; }
+.clivuu-inline-popover .clivuu-audio-popup { margin:-2px -1px; font-size:11px; }
+.clivuu-inline-popover .clivuu-audio-row { min-height:20px; }
+.clivuu-inline-popover button.clivuu-audio-mute { min-width:20px; min-height:20px; padding:0; border:0; border-radius:4px; box-shadow:none; background:transparent; color:alpha(@clivuu_ink, 0.85); }
+.clivuu-inline-popover button.clivuu-audio-mute:hover { background:@clivuu_hover; color:@clivuu_ink; }
+.clivuu-inline-popover button.clivuu-audio-mute:checked { background:alpha(@clivuu_dangerIcon, 0.14); color:@clivuu_dangerIcon; }
+.clivuu-inline-popover button.clivuu-audio-mute:checked:hover { background:alpha(@clivuu_dangerIcon, 0.22); }
+.clivuu-inline-popover .clivuu-audio-title { font-size:11px; }
+.clivuu-inline-popover .clivuu-audio-title.clivuu-audio-muted { opacity:0.5; }
+.clivuu-inline-popover .clivuu-audio-popup scale { min-height:18px; padding:0 2px; margin:0; }
+.clivuu-inline-popover .clivuu-audio-popup scale trough { min-height:4px; border-radius:2px; }
+.clivuu-inline-popover .clivuu-audio-popup scale slider { min-width:10px; min-height:10px; margin:-3px; }
+.clivuu-inline-popover .clivuu-audio-popup scale.clivuu-audio-muted { opacity:0.4; }
+.clivuu-inline-popover button.clivuu-audio-reset { min-height:18px; min-width:30px; padding:0 3px; font-size:10.5px; }
+.clivuu-inline-popover button.clivuu-audio-reset:disabled { opacity:0.72; }

@@ -1,0 +1,142 @@
+/* Shared content; hosts supply fonts and confirmation actions. The widget name
+ * keeps generic toolbar button rules from changing the palette or channels. */
+popover.clivuu-color-popover > contents,
+popover.clivuu-color-popover arrow {
+  background: @color_background;
+  color: @color_ink;
+  border-color: @color_border;
+}
+popover.clivuu-color-popover > contents { padding: 20px; }
+#clivuu-color-editor {
+  background: @color_background;
+  color: @color_ink;
+}
+#clivuu-color-editor label,
+#clivuu-color-editor entry,
+#clivuu-color-editor spinbutton,
+#clivuu-color-editor spinbutton text,
+#clivuu-color-editor button:not(.clivuu-color-action) {
+  font-family: inherit;
+  font-size: inherit;
+  font-style: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
+#clivuu-color-editor button.clivuu-swatch {
+  min-width: 20px;
+  min-height: 20px;
+  padding: 0;
+  border: 1px solid @color_border;
+  border-radius: 3px;
+  box-shadow: none;
+}
+#clivuu-color-editor button.clivuu-swatch-selected {
+  outline: 2px solid @color_accent;
+  outline-offset: 1px;
+}
+#clivuu-color-editor button.clivuu-color-tool {
+  min-height: 24px;
+  padding: 4px 10px;
+  background: @color_surface;
+  border: 0;
+  border-radius: 8px;
+  box-shadow: none;
+}
+#clivuu-color-editor button.clivuu-color-tool:hover {
+  background: alpha(@color_accent, 0.12);
+}
+#clivuu-color-editor button.clivuu-color-tool:disabled { opacity: 0.5; }
+#clivuu-color-editor .clivuu-color-canvas {
+  background: @color_field;
+  border: 1px solid @color_border;
+  border-radius: 6px;
+}
+#clivuu-color-editor .clivuu-color-field {
+  min-height: 30px;
+  padding: 0 7px 0 8px;
+  background: @color_field;
+  border: 1px solid @color_border;
+  border-radius: 6px;
+}
+#clivuu-color-editor .clivuu-color-field:hover {
+  border-color: alpha(@color_accent, 0.55);
+}
+#clivuu-color-editor .clivuu-color-field:focus-within {
+  border-color: @color_accent;
+  box-shadow: 0 0 0 1px alpha(@color_accent, 0.35);
+}
+#clivuu-color-editor .clivuu-color-field.clivuu-field-invalid,
+#clivuu-color-editor .clivuu-color-field.clivuu-field-invalid:hover,
+#clivuu-color-editor .clivuu-color-field.clivuu-field-invalid:focus-within {
+  border-color: @color_danger;
+  box-shadow: 0 0 0 1px alpha(@color_danger, 0.35);
+}
+#clivuu-color-editor .clivuu-color-field label.clivuu-color-tag {
+  color: @color_muted;
+  font-size: 0.9em;
+  font-weight: 600;
+}
+#clivuu-color-editor .clivuu-color-field spinbutton,
+#clivuu-color-editor .clivuu-color-field entry {
+  min-height: 0;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  outline-style: none;
+  outline-width: 0;
+  outline-color: transparent;
+}
+#clivuu-color-editor .clivuu-color-field spinbutton:focus-within,
+#clivuu-color-editor .clivuu-color-field entry:focus-within,
+#clivuu-color-editor .clivuu-color-field entry:focus {
+  border: 0;
+  box-shadow: none;
+  outline-style: none;
+  outline-width: 0;
+}
+#clivuu-color-editor .clivuu-color-field spinbutton text {
+  min-width: 22px;
+  min-height: 0;
+  padding: 2px 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  font-variant-numeric: tabular-nums;
+}
+#clivuu-color-editor .clivuu-color-field entry {
+  font-variant-numeric: tabular-nums;
+}
+#clivuu-color-editor .clivuu-color-field spinbutton button {
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+}
+#clivuu-color-editor .clivuu-color-field button.clivuu-color-copy {
+  min-width: 22px;
+  min-height: 22px;
+  padding: 2px;
+  margin: 0 -2px 0 2px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  box-shadow: none;
+  color: @color_muted;
+}
+#clivuu-color-editor .clivuu-color-field button.clivuu-color-copy:hover {
+  color: @color_ink;
+  background: alpha(@color_accent, 0.14);
+}
+#clivuu-color-editor .clivuu-color-field button.clivuu-color-copy.clivuu-color-copied {
+  color: @color_accent;
+}
+#clivuu-color-editor label.clivuu-color-status {
+  color: @color_danger;
+  font-size: 0.92em;
+}

@@ -1,0 +1,146 @@
+window.clivuu-layer { background: transparent; }
+.clivuu-portable-pin { background: transparent; padding: 0; }
+.clivuu-portable-menu-scroll {
+    background: @pin_menu_bg;
+    color: @pin_menu_fg;
+    border: 1px solid @pin_menu_border;
+    border-radius: 8px;
+    box-shadow: inset 0 1px 0 @pin_menu_highlight;
+}
+.clivuu-portable-menu-scroll > viewport {
+    background: transparent;
+    border: 0;
+}
+.clivuu-portable-menu {
+    background: transparent;
+    color: @pin_menu_fg;
+    padding: 4px;
+    border: 0;
+    box-shadow: none;
+    font-size: 12px;
+}
+.clivuu-portable-menu > separator,
+.clivuu-portable-menu .clivuu-menu-page > separator {
+    background: @pin_menu_sep;
+    min-height: 1px;
+    margin: 3px 5px;
+}
+.clivuu-portable-menu .clivuu-menu-header {
+    font-weight: 600;
+}
+.clivuu-portable-menu .clivuu-menu-count {
+    color: @pin_menu_muted;
+    background: @pin_stepper_bg;
+    border: 1px solid @pin_stepper_border;
+    border-radius: 99px;
+    padding: 0 5px;
+    font-size: 10px;
+    font-weight: 500;
+}
+.clivuu-portable-menu .clivuu-menu-chevron {
+    color: @pin_menu_muted;
+}
+.clivuu-portable-menu .clivuu-menu-item {
+    background: transparent;
+    color: @pin_menu_fg;
+    border: 0;
+    box-shadow: none;
+    padding: 0 7px;
+    border-radius: 5px;
+    min-height: 23px;
+    font-weight: 450;
+    transition: background-color 100ms ease-out;
+}
+.clivuu-portable-menu .clivuu-menu-item:hover {
+    background: @pin_menu_hover;
+}
+.clivuu-portable-menu .clivuu-menu-item:active {
+    background: @pin_menu_press;
+}
+.clivuu-portable-menu .clivuu-menu-icon {
+    color: @pin_menu_muted;
+}
+.clivuu-portable-menu .clivuu-menu-item:hover .clivuu-menu-icon {
+    color: @pin_menu_fg;
+}
+.clivuu-portable-menu .clivuu-menu-item.clivuu-menu-item-active {
+    background: @pin_active_bg;
+    font-weight: 500;
+}
+.clivuu-portable-menu .clivuu-menu-item.clivuu-menu-item-active:hover {
+    background: @pin_active_hover;
+}
+.clivuu-portable-menu .clivuu-menu-item.clivuu-menu-item-active .clivuu-menu-icon,
+.clivuu-portable-menu .clivuu-menu-check {
+    color: @pin_accent;
+}
+.clivuu-portable-menu .clivuu-menu-shortcut {
+    color: @pin_menu_muted;
+    font-size: 10.5px;
+    font-weight: 450;
+}
+.clivuu-portable-menu .clivuu-menu-destructive,
+.clivuu-portable-menu .clivuu-menu-destructive .clivuu-menu-icon,
+.clivuu-portable-menu .clivuu-menu-destructive .clivuu-menu-shortcut {
+    color: @pin_danger_fg;
+}
+.clivuu-portable-menu .clivuu-menu-destructive:hover {
+    background: @pin_danger_hover;
+}
+.clivuu-menu-opacity {
+    padding: 1px 4px 1px 7px;
+    min-height: 21px;
+}
+.clivuu-portable-menu .clivuu-menu-opacity-reset {
+    background: transparent;
+    color: @pin_menu_fg;
+    border: 0;
+    box-shadow: none;
+    padding: 1px 4px;
+    margin-left: -4px;
+    border-radius: 4px;
+    min-height: 18px;
+    font-weight: 450;
+    transition: background-color 100ms ease-out;
+}
+.clivuu-portable-menu .clivuu-menu-opacity-reset:hover {
+    background: @pin_menu_hover;
+}
+.clivuu-portable-menu .clivuu-menu-opacity-reset:active {
+    background: @pin_menu_press;
+}
+.clivuu-menu-stepper {
+    background: @pin_stepper_bg;
+    border: 1px solid @pin_stepper_border;
+    border-radius: 5px;
+    padding: 1px;
+}
+.clivuu-menu-stepper > separator {
+    background: @pin_stepper_border;
+    min-width: 1px;
+    margin: 2px 0;
+}
+.clivuu-portable-menu .clivuu-menu-stepper button {
+    background: transparent;
+    color: @pin_menu_fg;
+    border: 0;
+    box-shadow: none;
+    padding: 0;
+    min-width: 19px;
+    min-height: 18px;
+    border-radius: 3px;
+    font-weight: 600;
+    transition: background-color 100ms ease-out;
+}
+.clivuu-portable-menu .clivuu-menu-stepper button:hover {
+    background: @pin_menu_hover;
+}
+.clivuu-portable-menu .clivuu-menu-stepper button:active {
+    background: @pin_menu_press;
+}
+.clivuu-portable-menu .clivuu-menu-stepper button:disabled {
+    opacity: 0.36;
+}
+.clivuu-pin-feedback { background:#ffffdc; color:#000000; border:1px solid #000000; border-radius:0; padding:3px 4px; font-size:12px; }
+popover.clivuu-pin-popup > contents { background: transparent; padding: 0; border: 0; box-shadow: none; }
+

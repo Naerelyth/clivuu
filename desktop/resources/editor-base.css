@@ -1,0 +1,42 @@
+/* Port of the pre-migration Selection and toolbarControlCss rules. */
+
+            .clivuu-capture-toolbar { background:#e6e6e6; color:#404040; border-radius:5px; padding:3px; border:1px solid #999; box-shadow:0 3px 8px #0005; font-size:12px; }
+            .clivuu-capture-toolbar, .clivuu-inline-popover { font-family:sans-serif; font-style:normal; font-weight:400; }
+            .clivuu-capture-toolbar label { line-height:1; padding:0; margin:0; }
+            .clivuu-capture-toolbar label.clivuu-toolbar-metric { min-height:24px; padding:0 6px; font-variant-numeric:tabular-nums; }
+            .clivuu-capture-toolbar button:not(.clivuu-color-action), .clivuu-inline-popover button:not(.clivuu-color-action) { font-family:inherit; font-size:inherit; font-weight:inherit; }
+            .clivuu-capture-toolbar button:not(.clivuu-color-action) { padding:3px; min-width:18px; min-height:18px; border:0; background:transparent; color:#404040; box-shadow:none; border-radius:2px; transition:none; }
+            .clivuu-capture-toolbar button.clivuu-toolbar-text:not(.clivuu-color-action) { padding:0 8px; min-width:24px; min-height:24px; border-radius:3px; }
+            .clivuu-capture-toolbar button:not(.clivuu-color-action):hover { background:#d1d1d1; }
+            .clivuu-capture-toolbar button:disabled { opacity:0.38; }
+            .clivuu-capture-toolbar button.suggested-action:not(.clivuu-color-action), .clivuu-capture-toolbar button:checked { background:#ffb500; }
+            .clivuu-annotation-options button.clivuu-option { padding:0; min-width:24px; min-height:24px; border-radius:0; }
+            .clivuu-annotation-options button.clivuu-current-color { min-width:22px; min-height:22px; padding:1px; }
+            .clivuu-annotation-options button.clivuu-swatch { padding:0; min-width:8px; min-height:8px; border:1px solid #8a8a8a; border-radius:0; }
+            .clivuu-annotation-options button.clivuu-swatch-selected { border-color:#404040; box-shadow:inset 0 0 0 1px white; }
+            .clivuu-annotation-options separator { background:#9b9b9b; min-width:1px; }
+            .clivuu-tool-separator { background:#9b9b9b; min-width:1px; }
+            .clivuu-annotation-options scale { min-height:18px; padding:0 6px; }
+            .clivuu-color-editor .clivuu-color-action { min-width:56px; min-height:24px; padding:4px 12px; font-weight:600; }
+            .clivuu-capture-toolbar.clivuu-theme-dark { background:#282a36; color:#f8f8f2; border-color:#625578; }
+            .clivuu-capture-toolbar.clivuu-theme-dark button:not(.clivuu-color-action) { color:#f8f8f2; }
+            .clivuu-capture-toolbar.clivuu-theme-dark button:not(.clivuu-color-action):hover { background:#44475a; }
+            .clivuu-capture-toolbar.clivuu-theme-dark button.suggested-action:not(.clivuu-color-action), .clivuu-capture-toolbar.clivuu-theme-dark button:checked { background:#bd93f9; color:#282a36; }
+            .clivuu-theme-dark .clivuu-tool-separator, .clivuu-theme-dark .clivuu-annotation-options separator { background:#625578; }
+            .clivuu-theme-dark.clivuu-capture-toolbar separator { background:#625578; }
+            .clivuu-theme-dark button.clivuu-swatch-selected { border-color:white; box-shadow:inset 0 0 0 1px #282a36; }
+            .clivuu-capture-hint { border-radius: 5px; padding: 6px 9px; font-size: 12px; }
+        
+
+.clivuu-capture-toolbar button.clivuu-record-button, .clivuu-capture-toolbar.clivuu-theme-dark button.clivuu-record-button { color: #ff5555; }
+.clivuu-capture-toolbar button.clivuu-record-ready, .clivuu-capture-toolbar.clivuu-theme-dark button.clivuu-record-ready { color: #3388ff; }
+
+.clivuu-capture-keys { color: #f8f8f2; background: #14161ed6; border: 1px solid #ffffff29; border-radius: 8px; padding: 10px 13px; box-shadow: 0 6px 18px #00000057; font-family: sans-serif; font-size: 12px; font-weight: 400; }
+.clivuu-capture-keys .clivuu-keycap { min-width: 15px; min-height: 17px; padding: 1px 5px; background: #ffffff1c; border: 1px solid #ffffff42; border-radius: 4px; box-shadow: 0 1px 0 #ffffff21; color: #f8f8f2; font-size: 11px; font-weight: 560; }
+.clivuu-capture-keys .clivuu-key-join { color: #f8f8f2b8; font-size: 11px; font-weight: 600; padding: 0 1px; }
+.clivuu-capture-keys .clivuu-key-alt { color: #f8f8f273; font-size: 10.5px; font-weight: 400; padding: 0 2px; }
+.clivuu-capture-keys .clivuu-key-desc { color: #f8f8f2eb; font-size: 12px; }
+
+.clivuu-capture-toolbar button.clivuu-record-button { transition: color 160ms ease-out, opacity 160ms ease-out; }
+
+.clivuu-annotation-options button.clivuu-sequence-step { min-width:18px; min-height:12px; padding:0; margin:0; border-radius:2px; }
