@@ -1,0 +1,115 @@
+[
+  {
+    "id": "width-popup",
+    "tool": "rect",
+    "popup": "Stroke width (image pixels)"
+  },
+  {
+    "id": "arrow-popup",
+    "tool": "arrow",
+    "popup": "Arrow type"
+  },
+  {
+    "id": "line-popup",
+    "tool": "arrow",
+    "popup": "Line segment type"
+  },
+  {
+    "id": "effect-popup",
+    "tool": "mosaic",
+    "popup": "Mosaic effect"
+  },
+  {
+    "id": "font-popup",
+    "tool": "text",
+    "popup": "Font family"
+  },
+  {
+    "id": "size-popup",
+    "tool": "text",
+    "popup": "Font size"
+  },
+  {
+    "id": "outline-popup",
+    "tool": "text",
+    "popup": "Outline options",
+    "style": {
+      "outlineMode": "auto"
+    }
+  },
+  {
+    "id": "outline-custom-popup",
+    "tool": "text",
+    "popup": "Outline options",
+    "style": {
+      "outlineMode": "custom",
+      "outlineColor": "#f1fa8c"
+    }
+  },
+  {
+    "id": "color-popup",
+    "tool": "pen",
+    "popup": "Choose color"
+  },
+  {
+    "id": "hover-tool",
+    "tool": "rect",
+    "hover": "toolbar:Pen⁵"
+  },
+  {
+    "id": "press-tool",
+    "tool": "rect",
+    "hover": "toolbar:Pen⁵",
+    "pressed": "toolbar:Pen⁵"
+  },
+  {
+    "id": "hover-selected",
+    "tool": "rect",
+    "hover": "toolbar:Shapes²"
+  },
+  {
+    "id": "press-selected",
+    "tool": "rect",
+    "hover": "toolbar:Shapes²",
+    "pressed": "toolbar:Shapes²"
+  },
+  {
+    "id": "hover-filled",
+    "tool": "rect",
+    "hover": "options:Filled",
+    "style": {
+      "fill": "solid"
+    }
+  },
+  {
+    "id": "hover-palette",
+    "tool": "pen",
+    "hover": "options:#ff0000"
+  },
+  {
+    "id": "history-undo",
+    "tool": "rect",
+    "history": "undo"
+  },
+  {
+    "id": "history-redo",
+    "tool": "rect",
+    "history": "redo"
+  },
+  {
+    "id": "history-both",
+    "tool": "rect",
+    "history": "both",
+    "hover": "toolbar:Undo"
+  },
+  {
+    "id": "history-selected",
+    "tool": "pen",
+    "history": "selected",
+    "style": {
+      "fill": "solid",
+      "color": "#ffb86c",
+      "width": 7
+    }
+  }
+]
