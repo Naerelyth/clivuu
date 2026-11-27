@@ -31,6 +31,8 @@ export async function probe(observer){
   const drag=async(a=[200,200],b=[700,500])=>{move(900,600);await pause(120);move(...a);await pause(150);button(true);await pause(80);for(let i=1;i<=10;i++){move(a[0]+(b[0]-a[0])*i/10,a[1]+(b[1]-a[1])*i/10);await pause(20);}button(false);await pause(200);};
   const layers=async()=>{const r=await msg('layers');return JSON.stringify(r).includes('clivuu-capture');};
   await wait(layers);check('Rust layer capture creates no managed editor window',(await msg('windows')).length===1);
+  await wait(()=>GLib.file_test(`${directory}/layer-capture-cursor.json`,GLib.FileTest.EXISTS)&&read('layer-capture-cursor.json').step===1);
+  check('niri layer capture starts with crosshair root and scene cursors before any click',read('layer-capture-cursor.json').rootCursor==='crosshair'&&read('layer-capture-cursor.json').sceneCursor==='crosshair');
   await drag();await key(Clutter.KEY_c,true);
   await wait(()=>GLib.file_test(`${directory}/layer-complete`,GLib.FileTest.EXISTS));check('completed native layer capture destroys its layer surfaces',!await layers());
   const focus=await msg('focused-window');check('native layer completion restores the fixture focus',focus?.title==='Clivuu native layer fixture');
@@ -48,6 +50,8 @@ export async function probe(observer){
   await wait(()=>new TextDecoder().decode(GLib.file_get_contents(`${directory}/layer-complete`)[1])==='4');
   check('niri expanded capture completes and removes all layer surfaces',!await layers());
   GLib.file_set_contents(`${directory}/layer-next-4`,'done');await wait(()=>read('layer-phase.json').step===5);await wait(layers);
+  await wait(()=>read('layer-capture-cursor.json').step===5);
+  check('niri pre-selected window presentation uses default root fallback cursor',read('layer-capture-cursor.json').rootCursor==='default');
   await key(Clutter.KEY_Tab);await key(Clutter.KEY_f);await key(Clutter.KEY_c,true);
   await wait(()=>new TextDecoder().decode(GLib.file_get_contents(`${directory}/layer-complete`)[1])==='5');results.push(...read('layer-results.json'));
   GLib.file_set_contents(`${directory}/layer-next-5`,'next');await wait(()=>read('layer-phase.json').step===6);await wait(layers);

@@ -3,8 +3,8 @@ use super::{backend::Signals, runtime::Library};
 use clivuu_core::{annotation::Bounds, i18n::t};
 use gtk::{gdk, glib, glib::translate::*, prelude::*};
 use std::{
-    cell::{Cell, RefCell},
-    ffi::{c_char, c_int, c_ulong},
+    cell::{Cell, OnceCell, RefCell},
+    ffi::{c_char, c_int, c_ulong, c_void},
     rc::Rc,
     sync::{
         Arc,
@@ -12,6 +12,64 @@ use std::{
     },
 };
 type Surface = *mut gdk::ffi::GdkSurface;
+
+struct SurfaceCursorApi {
+    _gtk: Library,
+    _x11: Library,
+    xdisplay: unsafe extern "C" fn(*mut gdk::ffi::GdkDisplay) -> *mut c_void,
+    xcursor: unsafe extern "C" fn(*mut gdk::ffi::GdkDisplay, *mut gdk::ffi::GdkCursor) -> c_ulong,
+    xid: unsafe extern "C" fn(Surface) -> c_ulong,
+    define_cursor: unsafe extern "C" fn(*mut c_void, c_ulong, c_ulong) -> c_int,
+    flush: unsafe extern "C" fn(*mut c_void) -> c_int,
+}
+impl SurfaceCursorApi {
+    fn load() -> Option<Self> {
+        let gtk = Library::open(c"libgtk-4.so.1").ok()?;
+        let x11 = Library::open(c"libX11.so.6").ok()?;
+        // SAFETY: public GDK X11 and Xlib entry points, invoked only on GdkX11Display.
+        unsafe {
+            Some(Self {
+                xdisplay: gtk.symbol(c"gdk_x11_display_get_xdisplay").ok()?,
+                xcursor: gtk.symbol(c"gdk_x11_display_get_xcursor").ok()?,
+                xid: gtk.symbol(c"gdk_x11_surface_get_xid").ok()?,
+                define_cursor: x11.symbol(c"XDefineCursor").ok()?,
+                flush: x11.symbol(c"XFlush").ok()?,
+                _gtk: gtk,
+                _x11: x11,
+            })
+        }
+    }
+}
+thread_local! {
+    static SURFACE_CURSOR_API: OnceCell<Option<SurfaceCursorApi>> = const { OnceCell::new() };
+}
+
+/// Synchronize the X11 window's own `CWCursor` fallback with GDK's surface cursor.
+/// GTK4 skips `XIDefineCursor` until `GDK_ENTER_NOTIFY` populates `surface_under_pointer`;
+/// setting `XDefineCursor` ensures newly mapped override-redirect overlays display the
+/// themed cursor immediately even if mapped under a stationary pointer or panel click.
+fn set_surface_cursor(surface: &gdk::Surface, cursor: Option<&gdk::Cursor>) {
+    let display = surface.display();
+    if display.type_().name() != "GdkX11Display" {
+        return;
+    }
+    SURFACE_CURSOR_API.with(|cell| {
+        let Some(api) = cell.get_or_init(SurfaceCursorApi::load).as_ref() else {
+            return;
+        };
+        unsafe {
+            let xdisplay = (api.xdisplay)(display.to_glib_none().0);
+            let xid = (api.xid)(surface.to_glib_none().0);
+            if !xdisplay.is_null() && xid != 0 {
+                let xcursor = cursor.map_or(0, |c| {
+                    (api.xcursor)(display.to_glib_none().0, c.to_glib_none().0)
+                });
+                (api.define_cursor)(xdisplay, xid, xcursor);
+                (api.flush)(xdisplay);
+            }
+        }
+    });
+}
 
 /// Keep X11's named-cursor cache in sync with the display's surface scale.
 /// GTK normalizes XSettings cursor size to logical pixels, so a scale change
@@ -56,6 +114,20 @@ impl CursorThemeWatch {
                             theme.to_glib_none().0,
                             settings.gtk_cursor_theme_size(),
                         );
+                    }
+                    for window in gtk::Window::list_toplevels()
+                        .into_iter()
+                        .filter_map(|w| w.downcast::<gtk::Window>().ok())
+                    {
+                        if gtk::prelude::WidgetExt::display(&window) == display
+                            && let Some(surface) = window.surface()
+                        {
+                            let cursor = window
+                                .child()
+                                .and_then(|c| c.cursor())
+                                .or_else(|| gdk::Cursor::from_name("default", None));
+                            set_surface_cursor(&surface, cursor.as_ref());
+                        }
                     }
                 }
             });
@@ -124,10 +196,30 @@ impl Backend {
         window.set_size_request(rect.width.ceil() as i32, rect.height.ceil() as i32);
         gtk::prelude::WidgetExt::realize(window);
         self.capture(window, rect, false)?;
+        let sync_window_cursor = |w: &gtk::Window| {
+            if let Some(surface) = w.surface() {
+                let cursor = w
+                    .child()
+                    .and_then(|c| c.cursor())
+                    .or_else(|| gdk::Cursor::from_name("default", None));
+                set_surface_cursor(&surface, cursor.as_ref());
+            }
+        };
+        sync_window_cursor(window);
+        if let Some(root) = window.child() {
+            let weak = window.downgrade();
+            let cursor_id = root.connect_cursor_notify(move |_| {
+                if let Some(w) = weak.upgrade() {
+                    sync_window_cursor(&w);
+                }
+            });
+            signals.borrow_mut().push((root.upcast(), cursor_id));
+        }
         let api = self.clone();
         let map_signals = signals.clone();
         let map_id = window.connect_map(move |w| {
             api.report_frame_timings(w);
+            sync_window_cursor(w);
             // MapNotify precedes Mutter's XWayland/Wayland focus reconciliation.
             let Some(clock) = w.frame_clock() else { return };
             let weak = w.downgrade();

@@ -128,6 +128,7 @@ impl Toolbar {
             .valign(gtk::Align::Start)
             .build();
         widget.add_css_class("clivuu-capture-toolbar");
+        widget.set_cursor_from_name(Some("default"));
         widget.set_size_request(-1, Self::HEIGHT);
         let (scroller, row) = super::floating_bar::scrollable_bar_row();
         widget.append(&scroller);

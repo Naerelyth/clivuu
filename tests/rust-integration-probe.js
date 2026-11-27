@@ -1,5 +1,6 @@
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
+import Shell from 'gi://Shell';
 import St from 'gi://St';
 import Clutter from 'gi://Clutter';
 import GdkPixbuf from 'gi://GdkPixbuf';
@@ -78,6 +79,97 @@ export async function probe(observer){
    GLib.file_set_contents(`${directory}/tray-pixel-${n}.json`,JSON.stringify({cx,cy,cw,ch,count,error,mean:error/count,width:after.width,height:after.height}));
    check('captured pixels contain the background rather than the tray menu '+n,after.width===1270&&after.height===730&&count>0&&error/count<1);
   }
+  GLib.file_set_contents(`${directory}/read-xfixes-cursor.py`,[
+   'import ctypes, hashlib, json',
+   'class Img(ctypes.Structure):',
+   '    _fields_=[("x",ctypes.c_short),("y",ctypes.c_short),("width",ctypes.c_ushort),("height",ctypes.c_ushort),("xhot",ctypes.c_ushort),("yhot",ctypes.c_ushort),("serial",ctypes.c_ulong),("pixels",ctypes.POINTER(ctypes.c_ulong)),("atom",ctypes.c_ulong),("name",ctypes.c_char_p)]',
+   'x11=ctypes.CDLL("libX11.so.6");xf=ctypes.CDLL("libXfixes.so.3")',
+   'x11.XOpenDisplay.restype=ctypes.c_void_p;x11.XCloseDisplay.argtypes=[ctypes.c_void_p];x11.XFree.argtypes=[ctypes.c_void_p]',
+   'xf.XFixesGetCursorImage.argtypes=[ctypes.c_void_p];xf.XFixesGetCursorImage.restype=ctypes.POINTER(Img)',
+   'd=x11.XOpenDisplay(None);p=xf.XFixesGetCursorImage(d);im=p.contents',
+   'n=im.width*im.height;raw=bytes(((im.pixels[i]>>s)&255) for i in range(n) for s in (0,8,16,24))',
+   'print(json.dumps({"width":im.width,"height":im.height,"xhot":im.xhot,"yhot":im.yhot,"hash":hashlib.sha256(raw).hexdigest()[:16]}))',
+   'x11.XFree(p);x11.XCloseDisplay(d)',
+  ].join('\n'));
+  const xfixesCursor=async()=>JSON.parse(await run(['python3',`${directory}/read-xfixes-cursor.py`]));
+  const clickTray=async(times,gapMs=95,btn=1)=>{
+   indicator=find();
+   const [ix,iy]=indicator.get_transformed_position(),[iw,ih]=indicator.get_transformed_size();
+   move(ix+iw/2,iy+ih/2);await pause(60);
+   for(let k=0;k<times;k++){
+    pointer.notify_button(GLib.get_monotonic_time(),btn,Clutter.ButtonState.PRESSED);await pause(35);
+    pointer.notify_button(GLib.get_monotonic_time(),btn,Clutter.ButtonState.RELEASED);
+    if(k+1<times)await pause(gapMs);
+   }
+  };
+  const escapeOverlay=async()=>{
+   keyboard.notify_keyval(GLib.get_monotonic_time(),Clutter.KEY_Escape,Clutter.KeyState.PRESSED);
+   keyboard.notify_keyval(GLib.get_monotonic_time(),Clutter.KEY_Escape,Clutter.KeyState.RELEASED);
+   await wait(async()=>!(await execute({command:'status'})).busy);
+   await wait(()=>!find().menu.isEmpty());
+  };
+  // 1) Real 2-click on the panel tray icon.
+  await clickTray(2);
+  await wait(async()=>(await execute({command:'status'})).captureWindows?.some(w=>w.mapped&&w.active));
+  await pause(500);
+  indicator=find();
+  check('real 2-click tray activation keeps tray menu closed without modal grab',!indicator.menu.isOpen&&!indicator.menu.actor.visible&&Main.actionMode===Shell.ActionMode.NORMAL);
+  move(460,340);await pause(120);
+  const dblXfixes=await xfixesCursor(),dblCw=(await execute({command:'status'})).captureWindows[0];
+  check('real 2-click tray activation shows crosshair cursor without clicking',dblCw.rootCursor==='crosshair'&&dblCw.sceneCursor==='crosshair'&&Math.abs(dblXfixes.xhot-dblXfixes.width/2)<=4&&Math.abs(dblXfixes.yhot-dblXfixes.height/2)<=4);
+  await escapeOverlay();
+
+  // 2) Real 3-click on the panel tray icon (must not pop open _waitForDoubleClick menu after 400ms!).
+  await clickTray(3);
+  await wait(async()=>(await execute({command:'status'})).captureWindows?.some(w=>w.mapped&&w.active));
+  await pause(650);
+  indicator=find();
+  check('real 3-click tray activation blocks delayed 400ms popup menu and modal grab',!indicator.menu.isOpen&&!indicator.menu.actor.visible&&Main.actionMode===Shell.ActionMode.NORMAL&&indicator.visible);
+  move(420,320);await pause(140);
+  const preDragXfixes=await xfixesCursor(),cwHover=(await execute({command:'status'})).captureWindows[0];
+  check('real 3-click tray activation displays centered XWayland crosshair cursor before any drag',cwHover.rootCursor==='crosshair'&&cwHover.sceneCursor==='crosshair'&&preDragXfixes.width>0&&Math.abs(preDragXfixes.xhot-preDragXfixes.width/2)<=4&&Math.abs(preDragXfixes.yhot-preDragXfixes.height/2)<=4);
+  // Even if a delayed timer calls menu.toggle() while capture overlay is open, the suppressed menu refuses to open.
+  indicator.menu.toggle();await pause(150);
+  indicator=find();move(420,320);await pause(120);
+  check('delayed menu.toggle() during active capture never opens popup menu above overlay',!indicator.menu.isOpen&&!indicator.menu.actor.visible&&Main.actionMode===Shell.ActionMode.NORMAL&&(await execute({command:'status'})).captureWindows[0]?.rootCursor==='crosshair');
+  move(220,180);await pause(80);button(true);for(let i=1;i<=8;i++){move(220+300*i/8,180+240*i/8);await pause(20);}button(false);await pause(140);
+  move(360,300);await pause(120);
+  const cwSelected=(await execute({command:'status'})).captureWindows[0];
+  check('selecting a capture region switches root fallback to default and inside hover to move',cwSelected.rootCursor==='default'&&cwSelected.sceneCursor==='move');
+  pointer.notify_button(GLib.get_monotonic_time(),3,Clutter.ButtonState.PRESSED);await pause(40);pointer.notify_button(GLib.get_monotonic_time(),3,Clutter.ButtonState.RELEASED);await pause(140);
+  const postClearXfixes=await xfixesCursor(),cwCleared=(await execute({command:'status'})).captureWindows[0];
+  check('clearing capture selection restores crosshair cursor without requiring another drag',cwCleared.rootCursor==='crosshair'&&cwCleared.sceneCursor==='crosshair'&&postClearXfixes.hash===preDragXfixes.hash);
+  await escapeOverlay();
+
+  // 3) Real 4-click (coalesced and straddling active lock) and 5-click bursts + single-click menu recovery + CLI snip while menu is open.
+  await clickTray(4,55);
+  await wait(async()=>(await execute({command:'status'})).captureWindows?.some(w=>w.mapped&&w.active));
+  await pause(650);
+  indicator=find();move(450,310);await pause(120);
+  check('real 4-click coalesced tray burst enters capture with crosshair and no popup menu',!indicator.menu.isOpen&&Main.actionMode===Shell.ActionMode.NORMAL&&(await execute({command:'status'})).captureWindows[0]?.sceneCursor==='crosshair');
+  await escapeOverlay();
+  await clickTray(4,115);
+  await wait(async()=>(await execute({command:'status'})).captureWindows?.some(w=>w.mapped&&w.active));
+  await pause(650);
+  indicator=find();move(450,310);await pause(120);
+  check('real 4-click straddling tray burst restores menu cleanly on Escape without re-triggering capture',!indicator.menu.isOpen&&Main.actionMode===Shell.ActionMode.NORMAL&&(await execute({command:'status'})).captureWindows[0]?.sceneCursor==='crosshair');
+  await escapeOverlay();
+  await clickTray(5,80);
+  await wait(async()=>(await execute({command:'status'})).captureWindows?.some(w=>w.mapped&&w.active));
+  await pause(650);
+  indicator=find();move(450,310);await pause(120);
+  check('real 5-click tray burst enters capture with crosshair and no popup menu',!indicator.menu.isOpen&&Main.actionMode===Shell.ActionMode.NORMAL&&(await execute({command:'status'})).captureWindows[0]?.sceneCursor==='crosshair');
+  await escapeOverlay();
+  await clickTray(1);
+  await wait(()=>find().menu.isOpen&&find().menu._getMenuItems().some(i=>i.label?.text==='Restart'&&i.mapped));
+  check('single-clicking tray icon after capture exit opens the full restored menu',find().menu.isOpen&&Main.actionMode===Shell.ActionMode.POPUP);
+  const cliSnipWithOpenMenu=execute({command:'snip'}).catch(()=>null);
+  await wait(async()=>(await execute({command:'status'})).captureWindows?.some(w=>w.mapped&&w.active));
+  await pause(150);
+  check('starting capture while tray menu was open dismisses popup modal grab and restores icon',!find().menu.isOpen&&Main.actionMode===Shell.ActionMode.NORMAL&&find().visible);
+  await escapeOverlay();await cliSnipWithOpenMenu;
+  const integrationLog=new TextDecoder().decode(GLib.file_get_contents(`${directory}/rust-integration.log`)[1]);
+  check('rapid tray click bursts while busy do not emit capture-in-progress errors',!integrationLog.includes('already in progress'));
   await execute({command:'paste',source:'plain',text:'RESTART_PERSISTENCE',position:[240,180]});
   const beforeRestart=await execute({command:'status'}),oldPid=beforeRestart.pid;
   indicator=find();indicator.menu.open();await wait(()=>indicator.menu._getMenuItems().find(i=>i.label?.text==='Restart')?.mapped);await pause(250);

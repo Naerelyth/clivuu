@@ -73,6 +73,7 @@ impl OcrBar {
             .visible(false)
             .build();
         widget.add_css_class("clivuu-capture-toolbar");
+        widget.set_cursor_from_name(Some("default"));
         widget.set_size_request(-1, floating_bar::TOOLBAR_HEIGHT);
         let (scroller, row) = floating_bar::scrollable_bar_row();
         widget.append(&scroller);

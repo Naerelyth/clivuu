@@ -94,6 +94,7 @@ impl Subbar {
             .valign(gtk::Align::Start)
             .build();
         widget.add_css_class("clivuu-capture-toolbar");
+        widget.set_cursor_from_name(Some("default"));
         widget.set_size_request(-1, 32);
         let this = Self(Rc::new(Inner {
             row,

@@ -55,6 +55,7 @@ struct State {
     preferences: super::preferences::Client,
     group_manager: super::group_manager::Client,
     tray: RefCell<Option<Rc<crate::platform::integration::tray::Tray>>>,
+    tray_capture_lock: RefCell<Option<crate::platform::integration::tray::CaptureMenuLock>>,
     recording: Rc<super::recording::Recording>,
     record_pending: RefCell<Option<gio::Cancellable>>,
     scrolling: super::scrolling::Status,
@@ -251,6 +252,7 @@ impl Service {
                 preferences: super::preferences::Client::new(&connection),
                 group_manager: super::group_manager::Client::new(&connection),
                 tray: RefCell::new(None),
+                tray_capture_lock: RefCell::new(None),
                 recording,
                 record_pending: RefCell::new(None),
                 scrolling: Rc::new(RefCell::new(None)),
@@ -296,8 +298,20 @@ impl Service {
         let weak = Rc::downgrade(&state);
         let tray = crate::platform::integration::tray::Tray::new(&connection, move |request| {
             if let Some(state) = weak.upgrade() {
+                let is_capture = matches!(request["command"].as_str(), Some("snip" | "record"));
+                if is_capture && state.busy.get() {
+                    return;
+                }
+                if is_capture
+                    && let Some(tray) = state.tray.borrow().as_ref()
+                    && let Some((lock, _)) = tray.lock_capture()
+                {
+                    state.tray_capture_lock.replace(Some(lock));
+                }
                 glib::MainContext::default().spawn_local(async move {
-                    if let Err(e) = state.execute(request).await {
+                    let result = state.execute(request).await;
+                    state.tray_capture_lock.borrow_mut().take();
+                    if let Err(e) = result {
                         state.report_error(&e);
                     }
                 });
@@ -340,6 +354,22 @@ impl Service {
     }
 }
 impl State {
+    async fn begin_tray_capture(
+        &self,
+    ) -> Option<crate::platform::integration::tray::CaptureMenuLock> {
+        if let Some(existing) = self.tray_capture_lock.borrow_mut().take() {
+            return Some(existing);
+        }
+        let (lock, dismissed) = self.tray.borrow().as_ref()?.lock_capture()?;
+        if dismissed {
+            let _ = gio::CancellableFuture::new(
+                glib::timeout_future(std::time::Duration::from_millis(200)),
+                self.operation_cancel(),
+            )
+            .await;
+        }
+        Some(lock)
+    }
     fn operation_cancel(&self) -> gio::Cancellable {
         self.operation
             .borrow()
@@ -509,7 +539,7 @@ impl State {
                 let pins = board.pins.iter().filter(|p| !p.closed).count();
                 let closed = board.pins.iter().filter(|p| p.closed).count();
                 return Ok(
-                    json!({"running":true,"pid":std::process::id(),"ready":self.ready.get(),"protocol":protocol::VERSION,"backend":"rust","busy":self.busy.get(),"recording":self.recording.busy(),"recordingUi":self.recording.status(),"scrolling":*self.scrolling.borrow(),"pins":pins,"closedPins":closed,"pinUi":self.pins.status(),"captureOcr":self.capture_commands.ocr_status(),"captureCursor":self.capture_commands.cursor_status(),"captureWindows":gtk::Window::list_toplevels().iter().filter_map(|w|w.downcast_ref::<gtk::Window>()).filter(|w|w.title().as_deref()==Some("Clivuu capture overlay")).map(|w|json!({"mapped":w.is_mapped(),"active":w.is_active(),"focus":gtk::prelude::GtkWindowExt::focus(w).map(|f|f.type_().name().to_string()),"controllers":w.observe_controllers().n_items()})).collect::<Vec<_>>(),"images":board.pins.iter().filter(|p|!p.closed).map(|p|json!({"id":p.id,"rect":p.rect(),"group":p.group,"zoom":p.zoom,"hidden":p.hidden,"opacity":p.opacity,"shadow":p.shadow,"smooth":p.smooth,"maxSize":p.max_size,"grayscale":p.grayscale,"inverted":p.inverted})).collect::<Vec<_>>(),"group":board.group,"groups":board.groups,"groupDetails":board.group_summaries(),"capabilities":protocol::Capabilities{protocol:protocol::VERSION,backend:display.type_().name().to_string(),capture:true,non_focusing_pins:true,smart_windows:crate::platform::integration::windows::available(),scrolling:true,recording:true,settings:true}}),
+                    json!({"running":true,"pid":std::process::id(),"ready":self.ready.get(),"protocol":protocol::VERSION,"backend":"rust","busy":self.busy.get(),"recording":self.recording.busy(),"recordingUi":self.recording.status(),"scrolling":*self.scrolling.borrow(),"pins":pins,"closedPins":closed,"pinUi":self.pins.status(),"captureOcr":self.capture_commands.ocr_status(),"captureCursor":self.capture_commands.cursor_status(),"captureWindows":gtk::Window::list_toplevels().iter().filter_map(|w|w.downcast_ref::<gtk::Window>()).filter(|w|w.title().as_deref()==Some("Clivuu capture overlay")).map(|w|{let root=w.child();let scene=root.as_ref().and_then(|r|std::iter::successors(r.first_child(),|c|c.next_sibling()).find(|c|c.type_().name()=="ClivuuEditorScene"));json!({"mapped":w.is_mapped(),"active":w.is_active(),"focus":gtk::prelude::GtkWindowExt::focus(w).map(|f|f.type_().name().to_string()),"controllers":w.observe_controllers().n_items(),"rootCursor":root.and_then(|r|r.cursor()).and_then(|c|c.name()).map(|s|s.to_string()),"sceneCursor":scene.and_then(|s|s.cursor()).and_then(|c|c.name()).map(|s|s.to_string())})}).collect::<Vec<_>>(),"images":board.pins.iter().filter(|p|!p.closed).map(|p|json!({"id":p.id,"rect":p.rect(),"group":p.group,"zoom":p.zoom,"hidden":p.hidden,"opacity":p.opacity,"shadow":p.shadow,"smooth":p.smooth,"maxSize":p.max_size,"grayscale":p.grayscale,"inverted":p.inverted})).collect::<Vec<_>>(),"group":board.group,"groups":board.groups,"groupDetails":board.group_summaries(),"capabilities":protocol::Capabilities{protocol:protocol::VERSION,backend:display.type_().name().to_string(),capture:true,non_focusing_pins:true,smart_windows:crate::platform::integration::windows::available(),scrolling:true,recording:true,settings:true}}),
                 );
             }
             "capture-history" => return self.capture_history().await,
@@ -860,6 +890,11 @@ impl State {
             return Err(t("A capture or import session is already in progress"));
         }
         let _busy = Busy(&self.busy);
+        let _tray_capture = if matches!(command, "snip" | "record" | "scroll" | "barcode-scan") {
+            self.begin_tray_capture().await
+        } else {
+            None
+        };
         let operation = Scope::new(&self.work_cancel());
         self.operation.replace(Some(operation.token.clone()));
         let _operation = Operation(&self.operation);

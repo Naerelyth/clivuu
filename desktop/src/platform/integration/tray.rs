@@ -12,8 +12,12 @@ use std::{
     collections::HashMap,
     rc::Rc,
 };
+mod gnome;
+pub use gnome::CaptureMenuLock;
+
 const ITEM: &str = "org.kde.StatusNotifierItem";
 const MENU: &str = "com.canonical.dbusmenu";
+const MENU_PATH: &str = "/MenuBar";
 const PIN_GROUPS_CMD: &str = "@pin-groups";
 const PIN_RECOVERY_CMD: &str = "@pin-recovery";
 const SUB_SEP_1: i32 = 1001;
@@ -136,6 +140,7 @@ pub struct Tray {
     invoke: Rc<dyn Fn(Value)>,
     cancel: gio::Cancellable,
     menu_open: Cell<bool>,
+    gnome: Option<Rc<gnome::GnomeHost>>,
     pending_capture: RefCell<Option<Value>>,
     capture_timer: RefCell<Option<glib::SourceId>>,
 }
@@ -161,14 +166,27 @@ impl Tray {
         connection: &gio::DBusConnection,
         invoke: impl Fn(Value) + 'static,
     ) -> Result<Rc<Self>, String> {
+        Self::new_with_gnome(connection, crate::platform::display::is_gnome(), invoke)
+    }
+    fn new_with_gnome(
+        connection: &gio::DBusConnection,
+        gnome_host: bool,
+        invoke: impl Fn(Value) + 'static,
+    ) -> Result<Rc<Self>, String> {
         let (icons, icon) = icon_location();
+        let revision = Cell::new(1);
+        let gnome = if gnome_host {
+            Some(gnome::GnomeHost::new(connection, &revision, &icons)?)
+        } else {
+            None
+        };
         let this = Rc::new(Self {
             connection: connection.clone(),
             registrations: RefCell::new(vec![]),
             unwatch: RefCell::new(None),
             retry: RefCell::new(None),
             generation: Cell::new(0),
-            revision: Cell::new(1),
+            revision,
             state: Cell::new(TrayState::default()),
             groups: RefCell::new(vec![GroupSummary {
                 name: DEFAULT_GROUP.into(),
@@ -185,6 +203,7 @@ impl Tray {
             invoke: Rc::new(invoke),
             cancel: gio::Cancellable::new(),
             menu_open: Cell::new(false),
+            gnome,
             pending_capture: RefCell::new(None),
             capture_timer: RefCell::new(None),
         });
@@ -195,7 +214,7 @@ impl Tray {
                 include_str!("../../../resources/status-notifier.xml"),
             ),
             (
-                "/MenuBar",
+                MENU_PATH,
                 MENU,
                 include_str!("../../../resources/dbus-menu.xml"),
             ),
@@ -250,6 +269,9 @@ impl Tray {
     }
     fn new_owner(&self) -> u64 {
         self.menu_open.set(false);
+        if let Some(gnome) = &self.gnome {
+            gnome.reset();
+        }
         self.pending_capture.borrow_mut().take();
         if let Some(id) = self.capture_timer.borrow_mut().take() {
             id.remove();
@@ -328,11 +350,27 @@ impl Tray {
         self.revision.set(self.revision.get().wrapping_add(1));
         let _ = self.connection.emit_signal(
             None,
-            "/MenuBar",
+            MENU_PATH,
             MENU,
             "LayoutUpdated",
             Some(&(self.revision.get(), 0i32).to_variant()),
         );
+    }
+    pub fn lock_capture(self: &Rc<Self>) -> Option<(CaptureMenuLock, bool)> {
+        let gnome = self.gnome.as_ref()?;
+        self.pending_capture.borrow_mut().take();
+        if let Some(id) = self.capture_timer.borrow_mut().take() {
+            id.remove();
+        }
+        let weak = Rc::downgrade(self);
+        Some(gnome.lock_capture(
+            &self.menu_open,
+            Rc::new(move || {
+                if let Some(this) = weak.upgrade() {
+                    this.refresh();
+                }
+            }),
+        ))
     }
     fn new_icon(&self) {
         let _ = self
@@ -356,7 +394,11 @@ impl Tray {
                 "Category" => "ApplicationStatus".to_variant(),
                 "Id" => "clivuu".to_variant(),
                 "Title" => t("Clivuu").to_variant(),
-                "Status" => "Active".to_variant(),
+                "Status" => self
+                    .gnome
+                    .as_ref()
+                    .map_or("Active", |g| g.status())
+                    .to_variant(),
                 "IconName" => if self.state.get().recording {
                     "media-record-symbolic"
                 } else {
@@ -365,9 +407,11 @@ impl Tray {
                 .to_variant(),
                 "IconThemePath" => self.icons.to_variant(),
                 "ItemIsMenu" => false.to_variant(),
-                "Menu" => glib::variant::ObjectPath::try_from("/MenuBar")
-                    .unwrap()
-                    .to_variant(),
+                "Menu" => glib::variant::ObjectPath::try_from(
+                    self.gnome.as_ref().map_or(MENU_PATH, |g| g.menu_path()),
+                )
+                .unwrap()
+                .to_variant(),
                 _ => "".to_variant(),
             }
         } else {
@@ -674,14 +718,20 @@ impl Tray {
                 r["mode"] = json!(mode);
             }
             if matches!(e.command, "snip" | "record") {
-                self.pending_capture.replace(Some(r));
-                // The host owns the menu. Return the D-Bus reply first, then
-                // let its popup disappear; root closed may arrive after clicked.
-                self.schedule_capture(if self.menu_open.get() { 500 } else { 200 });
+                if !self.gnome.as_ref().is_some_and(|g| g.has_active_capture()) {
+                    self.queue_capture(r);
+                }
             } else {
                 (self.invoke)(r);
             }
         }
+    }
+    fn queue_capture(self: &Rc<Self>, request: serde_json::Value) {
+        self.pending_capture.replace(Some(request));
+        // The host owns the tray actor and popup menu. Reply over D-Bus first,
+        // then let any click press grab or popup exit animation finish before
+        // acquiring a screenshot and mapping the fullscreen capture overlay.
+        self.schedule_capture(if self.menu_open.get() { 500 } else { 200 });
     }
     fn schedule_capture(self: &Rc<Self>, delay_ms: u64) {
         if let Some(id) = self.capture_timer.borrow_mut().take() {
@@ -698,6 +748,11 @@ impl Tray {
                         if let Some(request) = request {
                             (this.invoke)(request);
                         }
+                        if let Some(gnome) = &this.gnome
+                            && gnome.on_capture_dispatched()
+                        {
+                            this.refresh();
+                        }
                     }
                 },
             )));
@@ -705,6 +760,15 @@ impl Tray {
     fn event(self: &Rc<Self>, id: i32, event: &str) {
         match (id, event) {
             (0, "opened") => {
+                if let Some(gnome) = &self.gnome {
+                    let (ignore, changed) = gnome.on_menu_opened(&self.menu_open);
+                    if changed {
+                        self.refresh();
+                    }
+                    if ignore {
+                        return;
+                    }
+                }
                 self.menu_open.set(true);
                 // Reopening the popup cancels an activation still settling.
                 self.pending_capture.borrow_mut().take();
@@ -731,18 +795,38 @@ impl Tray {
         args: &glib::Variant,
     ) -> Option<glib::Variant> {
         if interface == ITEM {
+            let version = clivuu_core::protocol::VERSION;
             match method {
-                "Activate" => (self.invoke)(json!({"protocol":1,"command":"snip"})),
-                "SecondaryActivate" => (self.invoke)(json!({"protocol":1,"command":"paste"})),
+                "Activate" => {
+                    let r = json!({"protocol": version, "command": "snip"});
+                    if let Some(gnome) = &self.gnome {
+                        if !gnome.has_active_capture() {
+                            if gnome.on_activate(self.menu_open.get()) {
+                                self.refresh();
+                            }
+                            self.queue_capture(r);
+                        }
+                    } else {
+                        (self.invoke)(r);
+                    }
+                }
+                "SecondaryActivate" => {
+                    (self.invoke)(json!({"protocol": version, "command": "paste"}));
+                }
                 "ContextMenu" | "Scroll" => {}
                 _ => return None,
             };
             return Some(().to_variant());
         }
+        let suppressed = self.gnome.as_ref().is_some_and(|g| g.is_menu_suppressed());
         Some(match method {
             "GetLayout" => {
                 let (parent, depth, _) = args.get::<(i32, i32, Vec<String>)>()?;
-                let layout = self.layout_node(parent, depth);
+                let layout = if suppressed && parent == 0 {
+                    gnome::GnomeHost::empty_root_layout()
+                } else {
+                    self.layout_node(parent, depth)
+                };
                 glib::Variant::tuple_from_iter([self.revision.get().to_variant(), layout])
             }
             "GetGroupProperties" => {
@@ -777,7 +861,7 @@ impl Tray {
                 }
                 (Vec::<i32>::new(),).to_variant()
             }
-            "AboutToShow" => (false,).to_variant(),
+            "AboutToShow" => (suppressed,).to_variant(),
             "AboutToShowGroup" => (Vec::<i32>::new(), Vec::<i32>::new()).to_variant(),
             _ => return None,
         })
@@ -845,7 +929,10 @@ mod tests {
             .unwrap();
             let calls = Rc::new(RefCell::new(Vec::new()));
             let observed = calls.clone();
-            let tray = Tray::new(&connection, move |r| observed.borrow_mut().push(r)).unwrap();
+            let tray = Tray::new_with_gnome(&connection, false, move |r| {
+                observed.borrow_mut().push(r);
+            })
+            .unwrap();
             glib::timeout_future(Duration::from_millis(20)).await;
             let event = |id, name: &str| {
                 connection.call_future(
@@ -859,6 +946,42 @@ mod tests {
                     2000,
                 )
             };
+            let item = |method: &str| {
+                connection.call_future(
+                    connection.unique_name().as_deref(),
+                    "/StatusNotifierItem",
+                    ITEM,
+                    method,
+                    Some(&(0i32, 0i32).to_variant()),
+                    None,
+                    gio::DBusCallFlags::NONE,
+                    2000,
+                )
+            };
+            // On KDE/niri/Hyprland (standard non-GNOME hosts), Activate and
+            // SecondaryActivate dispatch immediately with no artificial delay
+            // and never redirect Menu away from /MenuBar.
+            assert!(tray.lock_capture().is_none());
+            item("Activate").await.unwrap();
+            assert_eq!(calls.borrow_mut().pop().unwrap()["command"], "snip");
+            item("SecondaryActivate").await.unwrap();
+            assert_eq!(calls.borrow_mut().pop().unwrap()["command"], "paste");
+            assert!(
+                connection
+                    .call_future(
+                        connection.unique_name().as_deref(),
+                        gnome::EMPTY_MENU_PATH,
+                        MENU,
+                        "GetLayout",
+                        Some(&(0i32, -1i32, Vec::<String>::new()).to_variant()),
+                        None,
+                        gio::DBusCallFlags::NONE,
+                        2000,
+                    )
+                    .await
+                    .is_err(),
+                "non-GNOME hosts do not register /MenuBarEmpty"
+            );
             event(0, "opened").await.unwrap();
             event(1, "clicked").await.unwrap();
             assert!(
@@ -1019,6 +1142,174 @@ mod tests {
             drop(tray);
             glib::timeout_future(Duration::from_millis(250)).await;
             assert!(calls.borrow().is_empty(), "shutdown removes pending timer");
+            connection.close_future().await.unwrap();
+        });
+    }
+
+    #[test]
+    fn gnome_tray_adapter_suppresses_delayed_popups_and_coalesces_activate() {
+        use std::{
+            io::BufRead,
+            process::{Child, Command, Stdio},
+        };
+        struct PrivateBus(Child);
+        impl Drop for PrivateBus {
+            fn drop(&mut self) {
+                let _ = self.0.kill();
+                let _ = self.0.wait();
+            }
+        }
+        let mut bus = PrivateBus(
+            Command::new("dbus-daemon")
+                .args(["--session", "--nofork", "--print-address=1"])
+                .stdin(Stdio::null())
+                .stdout(Stdio::piped())
+                .stderr(Stdio::inherit())
+                .spawn()
+                .unwrap(),
+        );
+        let mut address = String::new();
+        assert!(
+            std::io::BufReader::new(bus.0.stdout.take().unwrap())
+                .read_line(&mut address)
+                .unwrap()
+                > 0
+        );
+        let context = glib::MainContext::default();
+        context.block_on(async {
+            let connection = gio::DBusConnection::for_address_future(
+                address.trim(),
+                gio::DBusConnectionFlags::AUTHENTICATION_CLIENT
+                    | gio::DBusConnectionFlags::MESSAGE_BUS_CONNECTION,
+                None,
+            )
+            .await
+            .unwrap();
+            let calls = Rc::new(RefCell::new(Vec::new()));
+            let observed = calls.clone();
+            let tray = Tray::new_with_gnome(&connection, true, move |r| {
+                observed.borrow_mut().push(r);
+            })
+            .unwrap();
+            glib::timeout_future(Duration::from_millis(20)).await;
+            let event = |id, name: &str| {
+                connection.call_future(
+                    connection.unique_name().as_deref(),
+                    MENU_PATH,
+                    MENU,
+                    "Event",
+                    Some(&(id, name, 0i32.to_variant(), 0u32).to_variant()),
+                    None,
+                    gio::DBusCallFlags::NONE,
+                    2000,
+                )
+            };
+            let item = |method: &str| {
+                connection.call_future(
+                    connection.unique_name().as_deref(),
+                    "/StatusNotifierItem",
+                    ITEM,
+                    method,
+                    Some(&(0i32, 0i32).to_variant()),
+                    None,
+                    gio::DBusCallFlags::NONE,
+                    2000,
+                )
+            };
+            let menu_prop = || {
+                connection.call_future(
+                    connection.unique_name().as_deref(),
+                    "/StatusNotifierItem",
+                    "org.freedesktop.DBus.Properties",
+                    "Get",
+                    Some(&(ITEM, "Menu").to_variant()),
+                    None,
+                    gio::DBusCallFlags::NONE,
+                    2000,
+                )
+            };
+            let layout_children = |path: &str| {
+                connection.call_future(
+                    connection.unique_name().as_deref(),
+                    path,
+                    MENU,
+                    "GetLayout",
+                    Some(&(0i32, -1i32, Vec::<String>::new()).to_variant()),
+                    None,
+                    gio::DBusCallFlags::NONE,
+                    2000,
+                )
+            };
+            type LayoutNode = (i32, HashMap<String, glib::Variant>, Vec<glib::Variant>);
+            type LayoutReply = (u32, LayoutNode);
+
+            item("Activate").await.unwrap();
+            item("Activate").await.unwrap();
+            item("Activate").await.unwrap();
+            let active_menu: (glib::Variant,) = menu_prop().await.unwrap().get().unwrap();
+            assert_eq!(
+                active_menu
+                    .0
+                    .get::<glib::variant::ObjectPath>()
+                    .unwrap()
+                    .as_str(),
+                gnome::EMPTY_MENU_PATH
+            );
+            let (_, empty_root): LayoutReply = layout_children(gnome::EMPTY_MENU_PATH)
+                .await
+                .unwrap()
+                .get()
+                .unwrap();
+            assert!(empty_root.2.is_empty());
+            glib::timeout_future(Duration::from_millis(100)).await;
+            assert!(calls.borrow().is_empty());
+            glib::timeout_future(Duration::from_millis(160)).await;
+            assert_eq!(calls.borrow().len(), 1);
+            assert_eq!(calls.borrow_mut().pop().unwrap()["command"], "snip");
+            let restored_menu: (glib::Variant,) = menu_prop().await.unwrap().get().unwrap();
+            assert_eq!(
+                restored_menu
+                    .0
+                    .get::<glib::variant::ObjectPath>()
+                    .unwrap()
+                    .as_str(),
+                MENU_PATH
+            );
+
+            let (lock, dismissed) = tray.lock_capture().unwrap();
+            assert!(!dismissed);
+            let (_, suppressed_root): LayoutReply =
+                layout_children(MENU_PATH).await.unwrap().get().unwrap();
+            assert!(suppressed_root.2.is_empty());
+            // A 4th click arriving after capture has already locked must neither
+            // queue a post-Escape capture nor leave Menu stuck on /MenuBarEmpty.
+            item("Activate").await.unwrap();
+            glib::timeout_future(Duration::from_millis(250)).await;
+            assert!(calls.borrow().is_empty());
+            drop(lock);
+            let unlocked_menu: (glib::Variant,) = menu_prop().await.unwrap().get().unwrap();
+            assert_eq!(
+                unlocked_menu
+                    .0
+                    .get::<glib::variant::ObjectPath>()
+                    .unwrap()
+                    .as_str(),
+                MENU_PATH
+            );
+            let (_, full_root): LayoutReply =
+                layout_children(MENU_PATH).await.unwrap().get().unwrap();
+            assert!(!full_root.2.is_empty());
+
+            event(0, "opened").await.unwrap();
+            item("Activate").await.unwrap();
+            glib::timeout_future(Duration::from_millis(240)).await;
+            assert!(calls.borrow().is_empty());
+            event(0, "closed").await.unwrap();
+            glib::timeout_future(Duration::from_millis(260)).await;
+            assert_eq!(calls.borrow().len(), 1);
+            assert_eq!(calls.borrow_mut().pop().unwrap()["command"], "snip");
+
+            drop(tray);
             connection.close_future().await.unwrap();
         });
     }

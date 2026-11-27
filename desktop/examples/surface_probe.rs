@@ -35,7 +35,19 @@ fn main() {
             let mut held=None;
             if step==3 {let (tx,rx)=std::sync::mpsc::channel();let (started,ready)=async_channel::bounded(1);let task=pool.submit(move|_|{let _=started.try_send(());let _=rx.recv();Ok(())}).unwrap();ready.recv().await.unwrap();held=Some((tx,task));}
             std::fs::write(directory.join("layer-phase.json"),json!({"step":step,"width":limit.width,"height":limit.height,"socket":std::env::var("NIRI_SOCKET").unwrap()}).to_string()).unwrap();
+            let cursor_dir=directory.clone();
+            let cursor_watch=glib::timeout_add_local(Duration::from_millis(20),move||{
+                if let Some(w)=gtk::Window::list_toplevels().into_iter().filter_map(|w|w.downcast::<gtk::Window>().ok()).find(|w|w.title().as_deref()==Some("Clivuu capture overlay")&&w.is_mapped()){
+                    let root=w.child();
+                    let scene=root.as_ref().and_then(|r|std::iter::successors(r.first_child(),|c|c.next_sibling()).find(|c|c.type_().name()=="ClivuuEditorScene"));
+                    let tmp=cursor_dir.join("layer-capture-cursor.tmp");
+                    let _=std::fs::write(&tmp,json!({"step":step,"mapped":true,"rootCursor":root.and_then(|r|r.cursor()).and_then(|c|c.name()).map(|s|s.to_string()),"sceneCursor":scene.and_then(|s|s.cursor()).and_then(|c|c.name()).map(|s|s.to_string())}).to_string());
+                    let _=std::fs::rename(tmp,cursor_dir.join("layer-capture-cursor.json"));
+                }
+                glib::ControlFlow::Continue
+            });
             let selected=capture::select(&display,image,outputs,windows,None,options,pool,&gtk::gio::Cancellable::new()).await;
+            cursor_watch.remove();
             if let Some((gate,task))=held{let _=gate.send(());let _=task.result().await;}
             if step>=5 {
                 let details=match &selected {Ok(Some(capture::Selected::Image(r)))=>json!({"rect":r.rect,"dimensions":r.image.dimensions(),"nonBlue":r.image.pixels.pixels().filter(|p|**p!=Rgba([36,104,172,255])).count()}),Ok(None)=>json!("cancelled"),Ok(_)=>json!("region"),Err(e)=>json!(e)};

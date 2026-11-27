@@ -99,7 +99,7 @@ export default class Observer extends Extension {
     disable(){}
 }
 """)
-if (args.rust_capture_consent or args.rust_notification or args.rust_saving or args.rust_recording_audio or args.rust_playback or args.rust_cursor or args.rust_cursor_scale or args.rust_pins or args.rust_monitors or args.rust_shortcuts or args.rust_mouse) and os.environ.get('CLIVUU_TEST_ANONYMOUS') != '1':
+if (args.rust_integration or args.rust_capture_consent or args.rust_notification or args.rust_saving or args.rust_recording_audio or args.rust_playback or args.rust_cursor or args.rust_cursor_scale or args.rust_pins or args.rust_monitors or args.rust_shortcuts or args.rust_mouse) and os.environ.get('CLIVUU_TEST_ANONYMOUS') != '1':
     applications=directory/'data/applications';applications.mkdir()
     (applications/'renamed-clivuu.desktop').write_text('[Desktop Entry]\nType=Application\nName=Clivuu\nStartupWMClass=io.github.naerelyth.clivuu\nExec='+str(args.binary.resolve())+'\nIcon='+str(extension/'icons/clivoo.svg')+'\n')
 env=os.environ.copy()

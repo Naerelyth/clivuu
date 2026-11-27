@@ -74,7 +74,7 @@ mod imp {
             // a surface fallback as well, so an unset button cursor cannot
             // inherit a differently scaled X11 root cursor while pressed.
             // Device/widget cursors (brushes, text, resize) still override it.
-            super::super::native_cursor::set_default(&*self.obj());
+            super::super::native_cursor::apply_surface(&*self.obj());
         }
         fn measure(&self, _: gtk::Orientation, _: i32) -> (i32, i32, i32, i32) {
             (0, 0, -1, -1)

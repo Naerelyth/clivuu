@@ -937,6 +937,7 @@ struct View {
     lens: Canvas,
     tips: super::capture_hints::Hints,
     viewport: Bounds,
+    root_cursor: Cell<&'static str>,
     pointer_over_ui: Cell<bool>,
     motion: RefCell<Option<gtk::EventController>>,
 }
@@ -965,10 +966,35 @@ impl View {
             return;
         };
         let selection = self.document.selection.borrow();
+        let ocr_active = self.document.ocr.borrow().is_active();
+        let unselected_cursor = !selection.selected
+            || selection
+                .drag
+                .is_some_and(|d| d.kind == clivuu_core::capture::DragKind::New);
+        let root_cursor = if unselected_cursor {
+            "crosshair"
+        } else {
+            "default"
+        };
+        if self.root_cursor.replace(root_cursor) != root_cursor {
+            crate::ui::native_cursor::set_named(&root, root_cursor);
+            if unselected_cursor {
+                self.editor.scene().set_named_cursor(Some("crosshair"));
+            } else if let Some(point) = selection.pointer {
+                let model = self.document.editor.borrow();
+                if !ocr_active && model.tool() == Tool::Select {
+                    let margin = capture_draw::resize_margin(&self.document.style.borrow(), 8.);
+                    self.editor
+                        .scene()
+                        .set_named_cursor(Some(selection.cursor(point, margin)));
+                }
+            } else {
+                self.editor.scene().set_named_cursor(None);
+            }
+        }
         let output = selection.outputs[selection.output_at(selection.rect.center())].rect;
         let owner = output.center();
         let owns_controls = self.viewport.contains(owner, 0.);
-        let ocr_active = self.document.ocr.borrow().is_active();
         if selection.drag.is_none() || ocr_active {
             self.editor.toolbar().set_ocr_active(ocr_active);
             if owns_controls {
@@ -1218,6 +1244,7 @@ impl CaptureView {
             lens,
             tips,
             viewport,
+            root_cursor: Cell::new(""),
             pointer_over_ui: Cell::new(false),
             motion: RefCell::new(None),
         }));
